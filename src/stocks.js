@@ -1,5 +1,5 @@
-import { getStockData } from './stockApi';
-import stocks from './stocks.json';
+import { getStockData } from "./stockApi";
+import stocks from "./stocks.json";
 
 async function addPriceToStocks(stock) {
   stock.current = await getStockData(stock.ticker);
@@ -14,5 +14,5 @@ export async function getStocks() {
 export function sumStocks(stocks) {
   return stocks.reduce((accum, stock) => {
     return accum + stock.current * stock.shares;
-  }, 0)
+  }, 0);
 }

@@ -1,25 +1,25 @@
-import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { getStocks } from './stocks'
-import Tickers from './Tickers';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { getStocks } from "./stocks";
+import Tickers from "./Tickers";
+import styled from "styled-components";
 
 const AppContainer = styled.div`
   min-height: 100vh;
 `;
-
 
 function App() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     getStocks().then(setData);
-  }, [])
+  }, []);
 
-    return <AppContainer>
+  return (
+    <AppContainer>
       <Tickers data={data} />
     </AppContainer>
+  );
 
   // return (
   //   <div className="App">
