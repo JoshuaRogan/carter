@@ -1,6 +1,6 @@
-import { getStockData } from "./stockApi";
-import carterStocks from "./carterStocks.json";
 import bradleyStocks from "./bradleyStocks.json";
+import carterStocks from "./carterStocks.json";
+import { getStockData } from "./stockApi";
 
 async function addPriceToStocks(stock) {
   stock.current = await getStockData(stock.ticker);
@@ -8,8 +8,7 @@ async function addPriceToStocks(stock) {
 }
 
 async function getStocks(stocks) {
-  const stocksWithPrice = await Promise.all(stocks.map(addPriceToStocks));
-  return stocksWithPrice;
+  return await Promise.all(stocks.map(addPriceToStocks));
 }
 
 export async function getBradleyStocks() {
@@ -17,11 +16,17 @@ export async function getBradleyStocks() {
 }
 
 export async function getCarterStocks() {
-  return getStocks(bradleyStocks);
+  return getStocks(carterStocks);
 }
 
 export function sumStocks(stocks) {
   return stocks.reduce((accum, stock) => {
     return accum + stock.current * stock.shares;
+  }, 0);
+}
+
+export function sumInvestmentAmount(stocks) {
+  return stocks.reduce((accum, stock) => {
+    return accum + stock.averageCost * stock.shares;
   }, 0);
 }

@@ -13,20 +13,5 @@
         "price": "145.38"
       }
     ]
-  },
-  {
-    "display": "Epic Games",
-    "image": "https://i.imgur.com/2kkQiSN.png",
-    "ticker": "TCEHY",
-    "exchange": "OTCMKTS",
-    "shares": 1,
-    "averageCost": "69.6",
-    "lots": [
-      {
-        "date": "2020-10-07",
-        "shares": 1,
-        "price": "69.6"
-      }
-    ]
   }
 ]
