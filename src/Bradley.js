@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { getCarterStocks } from "./stocks";
+import { getBradleyStocks } from "./stocks";
 import Tickers from "./Tickers";
 import styled from "styled-components";
 
@@ -8,11 +8,11 @@ const AppContainer = styled.div`
   min-height: 100vh;
 `;
 
-function App() {
+function Bradley() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    getCarterStocks().then(setData);
+    getBradleyStocks().then(setData);
   }, []);
 
   return (
@@ -22,4 +22,4 @@ function App() {
   );
 }
 
-export default App;
+export default Bradley;
