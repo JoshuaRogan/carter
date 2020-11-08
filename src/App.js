@@ -36,14 +36,18 @@ const VIEWS = {
 };
 
 function App() {
-  const [view, setView] = useState("home");
+  const [view, setView] = useState(VIEWS.home);
+
+  function back() {
+    setView(VIEWS.home);
+  }
 
   if (view === VIEWS.carter) {
-    return <Carter />;
+    return <Carter back={back} />;
   }
 
   if (view === VIEWS.bradley) {
-    return <Bradley />;
+    return <Bradley back={back} />;
   }
 
   return (
