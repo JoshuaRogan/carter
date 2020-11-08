@@ -58,11 +58,6 @@ const TickerImage = styled.img`
   }
 `;
 
-const NegativePositiveText = styled.span`
-  color: ${(props) => (props.isNegative ? "#e74c3c" : "#2ecc71")};
-  font-weight: bold;
-`;
-
 function Icon({ isNegative }) {
   if (isNegative) {
     return <ImArrowDown size=".8em" color="#e74c3c" />;
