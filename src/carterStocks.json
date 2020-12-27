@@ -28,5 +28,20 @@
         "price": "69.6"
       }
     ]
+  },
+  {
+    "display": "Ford",
+    "image": "https://i.imgur.com/8xFuYEV.png",
+    "ticker": "F",
+    "exchange": "NYSE",
+    "shares": 3,
+    "averageCost": "8.86",
+    "lots": [
+      {
+        "date": "2020-12-25",
+        "shares": 3,
+        "price": "8.86"
+      }
+    ]
   }
 ]
