@@ -14,7 +14,7 @@
       }
     ]
   },
-    {
+  {
     "display": "Ford",
     "image": "https://i.imgur.com/8xFuYEV.png",
     "ticker": "F",
@@ -29,7 +29,7 @@
       }
     ]
   },
-      {
+  {
     "display": "American Airlines",
     "image": "https://i.imgur.com/HpETAbV.png",
     "ticker": "AAL",

@@ -20,7 +20,7 @@ function Carter({ back }) {
   return (
     <AppContainer>
       <Back back={back} />
-      <Tickers data={data} name="Cater" />
+      <Tickers data={data} name="Carter" />
     </AppContainer>
   );
 }
