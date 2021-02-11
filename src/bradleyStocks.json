@@ -28,5 +28,20 @@
         "price": "8.86"
       }
     ]
+  },
+      {
+    "display": "American Airlines",
+    "image": "https://i.imgur.com/HpETAbV.png",
+    "ticker": "AAL",
+    "exchange": "NYSE",
+    "shares": 1,
+    "averageCost": "17.05",
+    "lots": [
+      {
+        "date": "2020-2-5",
+        "shares": 1,
+        "price": "16.53"
+      }
+    ]
   }
 ]

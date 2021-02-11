@@ -103,7 +103,6 @@ export default function Tickers({ data, name }) {
   const investmentDifference = stocksSum - investmentAmount;
   const percentChange = (investmentDifference / investmentAmount) * 100;
   const isNegative = investmentDifference < 0;
-  debugger;
 
   if (data.length === 0) {
     return "Loading...";
@@ -112,7 +111,7 @@ export default function Tickers({ data, name }) {
   return (
     <Container>
       <PortfolioName> {name}'s Portfolio </PortfolioName>
-      <CartersMoney>${stocksSum}</CartersMoney>
+      <CartersMoney>${stocksSum.toFixed(2)}</CartersMoney>
       <DeltaAmount>
         <Icon isNegative={isNegative} /> ${investmentDifference.toFixed(2)} (
         {percentChange.toFixed(2)}%)
