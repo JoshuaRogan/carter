@@ -49,7 +49,7 @@
       }
     ]
   },
-    {
+  {
     "display": "Hasbro",
     "image": "https://i.imgur.com/Za0X7sQ.png",
     "ticker": "HAS",
@@ -61,6 +61,21 @@
         "date": "2021-02-5",
         "shares": 0.778,
         "price": "93"
+      }
+    ]
+  },
+  {
+    "display": "YouTube",
+    "image": "https://www.freeiconspng.com/thumbs/youtube-logo-png/youtube-logo-png-transparent-image-5.png",
+    "ticker": "GOOGL",
+    "exchange": "NYSE",
+    "shares": 0.246,
+    "averageCost": "101.33",
+    "lots": [
+      {
+        "date": "2022-10-5",
+        "shares": 0.246,
+        "price": "101.33"
       }
     ]
   }

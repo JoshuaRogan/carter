@@ -78,7 +78,8 @@ function Ticker({ current, shares, averageCost, image }) {
         <TickerImage src={image} />
       </TickerImageContainer>
       <div>
-        <strong>{shares}</strong> share{shares === 1 ? "" : "s"}
+        <strong>{shares}</strong> share{shares === 1 ? "" : "s"} ($
+        {(current * shares).toFixed(2)})
       </div>
       <div>
         Current Price: <strong>${current}</strong>
