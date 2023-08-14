@@ -5,6 +5,7 @@ export const FAMILIES = {
   ROGAN: "rogan",
   TOKASH: "tokash",
   LOCAL: "local",
+  ROGAN_DIR: "rogan-dir",
 };
 
 export function getSiteFamily() {
