@@ -5,6 +5,7 @@ import Carter from "./Carter";
 import Bradley from "./Bradley";
 import Reagan from "./Reagan";
 import Patrick from "./Patrick";
+import { FAMILIES, getSiteFamily } from "./env";
 
 const ButtonContainers = styled.div`
   display: flex;
@@ -39,6 +40,20 @@ const VIEWS = {
   home: "home",
 };
 
+const envSiteName = getSiteFamily();
+
+function OnShowOnSite({ children, siteName }) {
+  if (envSiteName === FAMILIES.LOCAL) {
+    return children;
+  }
+
+  if (siteName === envSiteName) {
+    return children;
+  }
+
+  return null;
+}
+
 function App() {
   const [view, setView] = useState(VIEWS.home);
 
@@ -64,36 +79,44 @@ function App() {
 
   return (
     <ButtonContainers>
-      <Button
-        onClick={() => {
-          setView(VIEWS.carter);
-        }}
-      >
-        Carter's Portfolio
-      </Button>
-      <Button
-        onClick={() => {
-          setView(VIEWS.bradley);
-        }}
-      >
-        Bradley's Portfolio
-      </Button>
+      <OnShowOnSite siteName={FAMILIES.NOLE}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.carter);
+          }}
+        >
+          Carter's Portfolio
+        </Button>
+      </OnShowOnSite>
+      <OnShowOnSite siteName={FAMILIES.NOLE}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.bradley);
+          }}
+        >
+          Bradley's Portfolio
+        </Button>
+      </OnShowOnSite>
 
-      <Button
-        onClick={() => {
-          setView(VIEWS.reagan);
-        }}
-      >
-        Reagans's Portfolio
-      </Button>
+      <OnShowOnSite siteName={FAMILIES.ROGAN}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.reagan);
+          }}
+        >
+          Reagan's Portfolio
+        </Button>
+      </OnShowOnSite>
 
-      <Button
-        onClick={() => {
-          setView(VIEWS.patrick);
-        }}
-      >
-        Patricks's Portfolio
-      </Button>
+      <OnShowOnSite siteName={FAMILIES.ROGAN}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.patrick);
+          }}
+        >
+          Patricks's Portfolio
+        </Button>
+      </OnShowOnSite>
     </ButtonContainers>
   );
 }
