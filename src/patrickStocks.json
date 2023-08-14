@@ -1,0 +1,72 @@
+[
+  {
+    "display": "Braves",
+    "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
+    "ticker": "BATRK",
+    "exchange": "NYSE",
+    "shares": 2,
+    "averageCost": "20",
+    "lots": [
+      {
+        "date": "2021-10-01",
+        "shares": 2,
+        "price": "20"
+      }
+    ]
+  },
+  {
+    "display": "Hasbro",
+    "image": "https://i.imgur.com/Za0X7sQ.png",
+    "ticker": "HAS",
+    "exchange": "NYSE",
+    "shares": 1.1,
+    "averageCost": "93",
+    "lots": [
+      {
+        "date": "2021-12-5",
+        "shares": 0.512,
+        "price": "93"
+      },
+      {
+        "date": "2022-12-5",
+        "shares": 0.6,
+        "price": "93"
+      }
+    ]
+  },
+  {
+    "display": "Waste Management",
+    "image": "https://1000logos.net/wp-content/uploads/2020/09/Waste-Management-Logo.png",
+    "ticker": "WM",
+    "exchange": "NYSE",
+    "shares": 0.308,
+    "averageCost": "16.91",
+    "lots": [
+      {
+        "date": "2023-08-12",
+        "shares": 0.308,
+        "price": "160"
+      }
+    ]
+  },
+  {
+    "display": "Paramount",
+    "image": "https://companieslogo.com/img/orig/PARA_BIG-d8040ab9.png?t=1649781882",
+    "ticker": "PARA",
+    "exchange": "NYSE",
+    "shares": 1.5,
+    "averageCost": "16.91",
+    "lots": [
+      {
+        "date": "2022-12-25",
+        "shares": 1.5,
+        "price": "16.46"
+      },
+      {
+        "date": "2023-08-12",
+        "shares": 3,
+        "price": "16.02"
+      }
+    ]
+  }
+]

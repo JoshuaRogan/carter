@@ -1,0 +1,112 @@
+[
+  {
+    "display": "Disney",
+    "image": "https://i.pinimg.com/originals/dc/5f/ee/dc5fee0189b193c8ebf8e19076ad56f0.png",
+    "ticker": "DIS",
+    "exchange": "NYSE",
+    "shares": 1,
+    "averageCost": "28.93",
+    "lots": [
+      {
+        "date": "2020-10-01",
+        "shares": 1,
+        "price": "121"
+      }
+    ]
+  },
+  {
+    "display": "Delta",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Delta_logo.svg",
+    "ticker": "DAL",
+    "exchange": "NYSE",
+    "shares": 3,
+    "averageCost": "28.93",
+    "lots": [
+      {
+        "date": "2020-10-01",
+        "shares": 3,
+        "price": "28.93"
+      }
+    ]
+  },
+  {
+    "display": "Sony",
+    "image": "https://1000logos.net/wp-content/uploads/2021/05/Sony-logo.png",
+    "ticker": "SONY",
+    "exchange": "NYSE",
+    "shares": 1,
+    "averageCost": "63",
+    "lots": [
+      {
+        "date": "2020-10-01",
+        "shares": 1,
+        "price": "63"
+      }
+    ]
+  },
+  {
+    "display": "Braves",
+    "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
+    "ticker": "BATRK",
+    "exchange": "NYSE",
+    "shares": 2,
+    "averageCost": "20",
+    "lots": [
+      {
+        "date": "2021-10-01",
+        "shares": 2,
+        "price": "20"
+      }
+    ]
+  },
+  {
+    "display": "Hasbro",
+    "image": "https://i.imgur.com/Za0X7sQ.png",
+    "ticker": "HAS",
+    "exchange": "NYSE",
+    "shares": 1.1,
+    "averageCost": "93",
+    "lots": [
+      {
+        "date": "2021-12-5",
+        "shares": 0.512,
+        "price": "93"
+      },
+      {
+        "date": "2022-12-5",
+        "shares": 0.6,
+        "price": "93"
+      }
+    ]
+  },
+  {
+    "display": "Gold",
+    "image": "https://i.pinimg.com/736x/05/83/9f/05839f01a44920cb63fb389278a75fac.jpg",
+    "ticker": "GOLD",
+    "exchange": "NYSE",
+    "shares": 3,
+    "averageCost": "16.91",
+    "lots": [
+      {
+        "date": "2023-08-12",
+        "shares": 3,
+        "price": "16.91"
+      }
+    ]
+  },
+  {
+    "display": "Paramount",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/89/Paramount_Pictures_2022_%28Blue%29.svg",
+    "ticker": "PARA",
+    "exchange": "NYSE",
+    "shares": 1.5,
+    "averageCost": "16.91",
+    "lots": [
+      {
+        "date": "2022-12-25",
+        "shares": 1.5,
+        "price": "16.46"
+      }
+    ]
+  }
+]

@@ -3,6 +3,8 @@ import "./App.css";
 import styled from "styled-components";
 import Carter from "./Carter";
 import Bradley from "./Bradley";
+import Reagan from "./Reagan";
+import Patrick from "./Patrick";
 
 const ButtonContainers = styled.div`
   display: flex;
@@ -32,6 +34,8 @@ const Button = styled.button`
 const VIEWS = {
   carter: "carter",
   bradley: "bradley",
+  reagan: "reagan",
+  patrick: "patrick",
   home: "home",
 };
 
@@ -50,6 +54,14 @@ function App() {
     return <Bradley back={back} />;
   }
 
+  if (view === VIEWS.reagan) {
+    return <Reagan back={back} />;
+  }
+
+  if (view === VIEWS.patrick) {
+    return <Patrick back={back} />;
+  }
+
   return (
     <ButtonContainers>
       <Button
@@ -65,6 +77,22 @@ function App() {
         }}
       >
         Bradley's Portfolio
+      </Button>
+
+      <Button
+        onClick={() => {
+          setView(VIEWS.reagan);
+        }}
+      >
+        Reagans's Portfolio
+      </Button>
+
+      <Button
+        onClick={() => {
+          setView(VIEWS.patrick);
+        }}
+      >
+        Patricks's Portfolio
       </Button>
     </ButtonContainers>
   );
