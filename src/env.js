@@ -9,6 +9,7 @@ export const FAMILIES = {
 };
 
 export function getSiteFamily() {
+  console.log("SITE_NAME", siteName);
   if (!siteName) {
     return FAMILIES.LOCAL;
   }
