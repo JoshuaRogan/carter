@@ -1,4 +1,4 @@
-const siteName = process.env.SITE_FAMILY;
+const siteName = process.env.REACT_APP_SITE_FAMILY;
 
 export const FAMILIES = {
   NOLE: "nole",
