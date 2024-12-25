@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
+import Olivia from "./Olivia";
+import Trinity from "./Trinity";
+import Grant from "./Grant";
 import styled from "styled-components";
 import Carter from "./Carter";
 import Bradley from "./Bradley";
@@ -35,8 +38,15 @@ const Button = styled.button`
 const VIEWS = {
   carter: "carter",
   bradley: "bradley",
+  andrwe: "andrew",
+
   reagan: "reagan",
   patrick: "patrick",
+
+  olivia: "olivia",
+  trinity: "trinity",
+  grant: "grant",
+
   home: "home",
 };
 
@@ -77,6 +87,18 @@ function App() {
     return <Patrick back={back} />;
   }
 
+  if (view === VIEWS.olivia) {
+    return <Olivia back={back} />;
+  }
+
+  if (view === VIEWS.trinity) {
+    return <Trinity back={back} />;
+  }
+
+  if (view === VIEWS.grant) {
+    return <Grant back={back} />;
+  }
+
   return (
     <ButtonContainers>
       <OnShowOnSite siteName={FAMILIES.NOLE}>
@@ -115,6 +137,36 @@ function App() {
           }}
         >
           Patricks's Portfolio
+        </Button>
+      </OnShowOnSite>
+
+      <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.olivia);
+          }}
+        >
+          Olivia's Portfolio
+        </Button>
+      </OnShowOnSite>
+
+      <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.grant);
+          }}
+        >
+          Grant's Portfolio
+        </Button>
+      </OnShowOnSite>
+
+      <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.trinity);
+          }}
+        >
+          Trinity's Portfolio
         </Button>
       </OnShowOnSite>
     </ButtonContainers>

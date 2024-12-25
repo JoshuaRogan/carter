@@ -2,6 +2,9 @@ import bradleyStocks from "./bradleyStocks.json";
 import carterStocks from "./carterStocks.json";
 import reaganStocks from "./reaganStocks.json";
 import patrickStocks from "./patrickStocks.json";
+import oliviaStocks from "./oliviaStocks.json";
+import trinityStocks from "./trinityStocks.json";
+import grantStocks from "./grantStocks.json";
 import { getStockData } from "./stockApi";
 
 async function addPriceToStocks(stock) {
@@ -27,6 +30,18 @@ export async function getPatrickStocks() {
 
 export async function getCarterStocks() {
   return getStocks(carterStocks);
+}
+
+export async function getOliviaStocks() {
+  return getStocks(oliviaStocks);
+}
+
+export async function getTrinityStocks() {
+  return getStocks(trinityStocks);
+}
+
+export async function getGrantStocks() {
+  return getStocks(grantStocks);
 }
 
 export function sumStocks(stocks) {
