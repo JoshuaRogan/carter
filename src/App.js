@@ -5,6 +5,7 @@ import Trinity from "./Trinity";
 import Grant from "./Grant";
 import styled from "styled-components";
 import Carter from "./Carter";
+import Andrew from "./Andrew";
 import Bradley from "./Bradley";
 import Reagan from "./Reagan";
 import Patrick from "./Patrick";
@@ -38,7 +39,7 @@ const Button = styled.button`
 const VIEWS = {
   carter: "carter",
   bradley: "bradley",
-  andrwe: "andrew",
+  andrew: "andrew",
 
   reagan: "reagan",
   patrick: "patrick",
@@ -79,6 +80,10 @@ function App() {
     return <Bradley back={back} />;
   }
 
+  if (view === VIEWS.andrew) {
+    return <Andrew back={back} />;
+  }
+
   if (view === VIEWS.reagan) {
     return <Reagan back={back} />;
   }
@@ -98,6 +103,8 @@ function App() {
   if (view === VIEWS.grant) {
     return <Grant back={back} />;
   }
+
+
 
   return (
     <ButtonContainers>
@@ -120,6 +127,16 @@ function App() {
         </Button>
       </OnShowOnSite>
 
+      <OnShowOnSite siteName={FAMILIES.NOLE}>
+        <Button
+          onClick={() => {
+            setView(VIEWS.andrew);
+          }}
+        >
+          Andrew's Portfolio
+        </Button>
+      </OnShowOnSite>
+
       <OnShowOnSite siteName={FAMILIES.ROGAN}>
         <Button
           onClick={() => {
@@ -136,7 +153,7 @@ function App() {
             setView(VIEWS.patrick);
           }}
         >
-          Patricks's Portfolio
+          Patrick's Portfolio
         </Button>
       </OnShowOnSite>
 

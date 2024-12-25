@@ -68,5 +68,20 @@
         "price": "16.02"
       }
     ]
+  },
+  {
+    "display": "Braves",
+    "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
+    "ticker": "BATRK",
+    "exchange": "NYSE",
+    "shares": 0.5,
+    "averageCost": "39.5",
+    "lots": [
+      {
+        "date": "2023-12-25",
+        "shares": 0.5,
+        "price": "39.5"
+      }
+    ]
   }
 ]

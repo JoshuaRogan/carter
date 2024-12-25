@@ -73,5 +73,50 @@
         "price": "293"
       }
     ]
+  },
+  {
+    "display": "Braves",
+    "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
+    "ticker": "BATRK",
+    "exchange": "NYSE",
+    "shares": 0.5,
+    "averageCost": "39.5",
+    "lots": [
+      {
+        "date": "2023-12-25",
+        "shares": 0.5,
+        "price": "39.5"
+      }
+    ]
+  },
+  {
+    "display": "Braves",
+    "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
+    "ticker": "BATRA",
+    "exchange": "NYSE",
+    "shares": 0.584,
+    "averageCost": "42.77",
+    "lots": [
+      {
+        "date": "2024-01-25",
+        "shares": 0.584,
+        "price": "42.77"
+      }
+    ]
+  },
+  {
+    "display": "WWE",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_FjKcBb5VLmEZ5cdOX7DrQO0hNPorw4wFUQ&s",
+    "ticker": "TKO",
+    "exchange": "NYSE",
+    "shares": 0.17,
+    "averageCost": "144.86",
+    "lots": [
+      {
+        "date": "2024-12-25",
+        "shares": 0.17,
+        "price": "144.86"
+      }
+    ]
   }
 ]

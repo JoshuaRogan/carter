@@ -93,5 +93,35 @@
         "price": "288"
       }
     ]
+  },
+  {
+    "display": "Braves",
+    "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
+    "ticker": "BATRK",
+    "exchange": "NYSE",
+    "shares": 0.5,
+    "averageCost": "39.5",
+    "lots": [
+      {
+        "date": "2023-12-25",
+        "shares": 0.5,
+        "price": "39.5"
+      }
+    ]
+  },
+  {
+    "display": "Sony",
+    "image": "https://e7.pngegg.com/pngimages/942/214/png-clipart-playstation-2-playstation-vr-playstation-camera-super-nintendo-entertainment-system-playstation-4-logo-text-logo-thumbnail.png",
+    "ticker": "SONY",
+    "exchange": "NYSE",
+    "shares": 1.17,
+    "averageCost": "21.14",
+    "lots": [
+      {
+        "date": "2023-12-25",
+        "shares": 1.17,
+        "price": "21.14"
+      }
+    ]
   }
 ]

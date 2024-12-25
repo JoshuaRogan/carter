@@ -1,4 +1,5 @@
 import bradleyStocks from "./bradleyStocks.json";
+import andrewStocks from "./andrewStocks.json";
 import carterStocks from "./carterStocks.json";
 import reaganStocks from "./reaganStocks.json";
 import patrickStocks from "./patrickStocks.json";
@@ -42,6 +43,10 @@ export async function getTrinityStocks() {
 
 export async function getGrantStocks() {
   return getStocks(grantStocks);
+}
+
+export async function getAndrewStocks() {
+  return getStocks(andrewStocks);
 }
 
 export function sumStocks(stocks) {
