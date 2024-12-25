@@ -104,89 +104,102 @@ function App() {
     return <Grant back={back} />;
   }
 
-
-
   return (
-    <ButtonContainers>
-      <OnShowOnSite siteName={FAMILIES.NOLE}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.carter);
-          }}
+    <>
+      <h2 style={{ textAlign: "center", color: "white" }}>
+        <a
+          href="https://www.youtube.com/watch?v=Epzr8azlxp8&ab_channel=EasyPeasyFinance"
+          style={{ color: "white" }}
         >
-          Carter's Portfolio
-        </Button>
-      </OnShowOnSite>
-      <OnShowOnSite siteName={FAMILIES.NOLE}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.bradley);
-          }}
-        >
-          Bradley's Portfolio
-        </Button>
-      </OnShowOnSite>
+          Learn About Stocks
+        </a>
+      </h2>
 
-      <OnShowOnSite siteName={FAMILIES.NOLE}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.andrew);
-          }}
-        >
-          Andrew's Portfolio
-        </Button>
-      </OnShowOnSite>
+      <h2 style={{ textAlign: "center", color: "white" }}>
+        Choose a Portfolio
+      </h2>
 
-      <OnShowOnSite siteName={FAMILIES.ROGAN}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.reagan);
-          }}
-        >
-          Reagan's Portfolio
-        </Button>
-      </OnShowOnSite>
+      <ButtonContainers>
+        <OnShowOnSite siteName={FAMILIES.NOLE}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.carter);
+            }}
+          >
+            Carter's Portfolio
+          </Button>
+        </OnShowOnSite>
+        <OnShowOnSite siteName={FAMILIES.NOLE}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.bradley);
+            }}
+          >
+            Bradley's Portfolio
+          </Button>
+        </OnShowOnSite>
 
-      <OnShowOnSite siteName={FAMILIES.ROGAN}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.patrick);
-          }}
-        >
-          Patrick's Portfolio
-        </Button>
-      </OnShowOnSite>
+        <OnShowOnSite siteName={FAMILIES.NOLE}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.andrew);
+            }}
+          >
+            Andrew's Portfolio
+          </Button>
+        </OnShowOnSite>
 
-      <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.olivia);
-          }}
-        >
-          Olivia's Portfolio
-        </Button>
-      </OnShowOnSite>
+        <OnShowOnSite siteName={FAMILIES.ROGAN}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.reagan);
+            }}
+          >
+            Reagan's Portfolio
+          </Button>
+        </OnShowOnSite>
 
-      <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.grant);
-          }}
-        >
-          Grant's Portfolio
-        </Button>
-      </OnShowOnSite>
+        <OnShowOnSite siteName={FAMILIES.ROGAN}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.patrick);
+            }}
+          >
+            Patrick's Portfolio
+          </Button>
+        </OnShowOnSite>
 
-      <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
-        <Button
-          onClick={() => {
-            setView(VIEWS.trinity);
-          }}
-        >
-          Trinity's Portfolio
-        </Button>
-      </OnShowOnSite>
-    </ButtonContainers>
+        <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.olivia);
+            }}
+          >
+            Olivia's Portfolio
+          </Button>
+        </OnShowOnSite>
+
+        <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.grant);
+            }}
+          >
+            Grant's Portfolio
+          </Button>
+        </OnShowOnSite>
+
+        <OnShowOnSite siteName={FAMILIES.KERRIGAN}>
+          <Button
+            onClick={() => {
+              setView(VIEWS.trinity);
+            }}
+          >
+            Trinity's Portfolio
+          </Button>
+        </OnShowOnSite>
+      </ButtonContainers>
+    </>
   );
 }
 
