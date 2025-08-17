@@ -136,6 +136,21 @@ const ViewToggleBtn = styled.button`
   }
 `;
 
+const Emoji = ({ label, symbol, fallback = "💰" }) => (
+  <span
+    role="img"
+    aria-label={label}
+    style={{
+      fontFamily:
+        "Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Segoe UI Symbol,sans-serif",
+      display: "inline-block",
+      lineHeight: 1,
+    }}
+  >
+    {symbol || fallback}
+  </span>
+);
+
 export default function PortfolioView({ id, onBack }) {
   const portfolio = getPortfolioById(id);
   const [stocks, setStocks] = useState([]);
@@ -202,21 +217,30 @@ export default function PortfolioView({ id, onBack }) {
 
       <MetricsStrip>
         <MetricCard>
-          <MetricLabel>Treasure 💰</MetricLabel>
+          <MetricLabel>
+            Treasure <Emoji label="treasure" symbol="💰" />
+          </MetricLabel>
           <MetricValue>${total.toFixed(2)}</MetricValue>
         </MetricCard>
         <MetricCard>
-          <MetricLabel>Put In 🪙</MetricLabel>
+          <MetricLabel>
+            Put In <Emoji label="invested" symbol="💵" />
+          </MetricLabel>
           <MetricValue>${invested.toFixed(2)}</MetricValue>
         </MetricCard>
         <MetricCard>
-          <MetricLabel>{friendlyDeltaLabel} 📈</MetricLabel>
+          <MetricLabel>
+            {friendlyDeltaLabel}{" "}
+            <Emoji label="performance" symbol={negative ? "📉" : "📈"} />
+          </MetricLabel>
           <MetricValue style={{ color: negative ? "#e74c3c" : "#1e9e52" }}>
             {negative ? "-" : "+"}${Math.abs(delta).toFixed(2)}
           </MetricValue>
         </MetricCard>
         <MetricCard>
-          <MetricLabel>Growth % 🌱</MetricLabel>
+          <MetricLabel>
+            Growth % <Emoji label="growth" symbol={negative ? "🌧️" : "🌱"} />
+          </MetricLabel>
           <MetricValue style={{ color: negative ? "#e74c3c" : "#1e9e52" }}>
             {negative ? "-" : "+"}
             {Math.abs(pct).toFixed(2)}%
