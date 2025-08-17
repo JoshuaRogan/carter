@@ -4,8 +4,6 @@
     "image": "https://i.pinimg.com/736x/05/83/9f/05839f01a44920cb63fb389278a75fac.jpg",
     "ticker": "B",
     "exchange": "NYSE",
-    "shares": 1.477,
-    "averageCost": "16.89",
     "lots": [
       {
         "date": "2024-12-25",

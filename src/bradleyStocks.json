@@ -4,8 +4,6 @@
     "image": "https://i.pinimg.com/originals/dc/5f/ee/dc5fee0189b193c8ebf8e19076ad56f0.png",
     "ticker": "DIS",
     "exchange": "NYSE",
-    "shares": 1,
-    "averageCost": "145.38",
     "lots": [
       {
         "date": "2019-12-26",
@@ -19,8 +17,6 @@
     "image": "https://i.imgur.com/8xFuYEV.png",
     "ticker": "F",
     "exchange": "NYSE",
-    "shares": 3,
-    "averageCost": "8.86",
     "lots": [
       {
         "date": "2020-12-25",
@@ -34,8 +30,6 @@
     "image": "https://i.imgur.com/HpETAbV.png",
     "ticker": "AAL",
     "exchange": "NYSE",
-    "shares": 1,
-    "averageCost": "17.05",
     "lots": [
       {
         "date": "2020-2-5",
@@ -49,8 +43,6 @@
     "image": "https://i.imgur.com/Za0X7sQ.png",
     "ticker": "HAS",
     "exchange": "NYSE",
-    "shares": 0.778,
-    "averageCost": "93",
     "lots": [
       {
         "date": "2021-02-5",
@@ -64,8 +56,6 @@
     "image": "https://images.ctfassets.net/y2ske730sjqp/5QQ9SVIdc1tmkqrtFnG9U1/de758bba0f65dcc1c6bc1f31f161003d/BrandAssets_Logos_02-NSymbol.jpg?w=940",
     "ticker": "NFLX",
     "exchange": "NYSE",
-    "shares": 0.085,
-    "averageCost": "293",
     "lots": [
       {
         "date": "2022-25-12",
@@ -79,8 +69,6 @@
     "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
     "ticker": "BATRK",
     "exchange": "NYSE",
-    "shares": 0.5,
-    "averageCost": "39.5",
     "lots": [
       {
         "date": "2023-12-25",
@@ -94,8 +82,6 @@
     "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
     "ticker": "BATRA",
     "exchange": "NYSE",
-    "shares": 0.584,
-    "averageCost": "42.77",
     "lots": [
       {
         "date": "2024-01-25",
@@ -109,8 +95,6 @@
     "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_FjKcBb5VLmEZ5cdOX7DrQO0hNPorw4wFUQ&s",
     "ticker": "TKO",
     "exchange": "NYSE",
-    "shares": 0.17,
-    "averageCost": "144.86",
     "lots": [
       {
         "date": "2024-12-25",

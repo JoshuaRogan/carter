@@ -4,13 +4,11 @@
     "image": "https://i.imgur.com/8xFuYEV.png",
     "ticker": "F",
     "exchange": "NYSE",
-    "shares": 2.5,
-    "averageCost": "10.10",
     "lots": [
       {
         "date": "2024-12-25",
         "shares": 2.5,
-        "price": "10"
+        "price": "10.10"
       }
     ]
   }

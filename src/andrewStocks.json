@@ -4,8 +4,6 @@
     "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
     "ticker": "BATRK",
     "exchange": "NYSE",
-    "shares": 0.5,
-    "averageCost": "39.5",
     "lots": [
       {
         "date": "2023-12-25",
@@ -19,8 +17,6 @@
     "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
     "ticker": "BATRA",
     "exchange": "NYSE",
-    "shares": 1.18,
-    "averageCost": "42.13",
     "lots": [
       {
         "date": "2024-01-25",
@@ -34,8 +30,6 @@
     "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT84NEfNHIhfCkBYzohOhzlZ7PsP-gVbew9vA&s",
     "ticker": "LMT",
     "exchange": "NYSE",
-    "shares": 0.05,
-    "averageCost": "488",
     "lots": [
       {
         "date": "2024-12-25",

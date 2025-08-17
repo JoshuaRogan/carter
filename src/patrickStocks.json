@@ -4,8 +4,6 @@
     "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
     "ticker": "BATRK",
     "exchange": "NYSE",
-    "shares": 2,
-    "averageCost": "20",
     "lots": [
       {
         "date": "2021-10-01",
@@ -19,8 +17,6 @@
     "image": "https://i.imgur.com/Za0X7sQ.png",
     "ticker": "HAS",
     "exchange": "NYSE",
-    "shares": 1.1,
-    "averageCost": "93",
     "lots": [
       {
         "date": "2021-12-5",
@@ -39,8 +35,6 @@
     "image": "https://yt3.googleusercontent.com/Z6kwr2rtUwo1glpPJzLIyEPgDChRc6K1SJsQOwsaDhBY1GQmED-1LO3uT7hHBsz_65mrWK_n=s900-c-k-c0x00ffffff-no-rj",
     "ticker": "WM",
     "exchange": "NYSE",
-    "shares": 0.418,
-    "averageCost": "200",
     "lots": [
       {
         "date": "2023-08-12",
@@ -59,8 +53,6 @@
     "image": "https://companieslogo.com/img/orig/PARA_BIG-d8040ab9.png?t=1649781882",
     "ticker": "PARA",
     "exchange": "NYSE",
-    "shares": 1.5,
-    "averageCost": "16.91",
     "lots": [
       {
         "date": "2022-12-25",
@@ -79,8 +71,6 @@
     "image": "https://loodibee.com/wp-content/uploads/Atlanta-Braves-Logo-1987-1989.png",
     "ticker": "BATRK",
     "exchange": "NYSE",
-    "shares": 0.5,
-    "averageCost": "39.5",
     "lots": [
       {
         "date": "2023-12-25",

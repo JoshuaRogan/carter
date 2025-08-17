@@ -22,49 +22,53 @@ const TickerTableContainer = styled.div`
 `;
 
 const TickerContainer = styled.div`
-  /* Upgraded styling for individual (non-condensed) detail view */
+  /* Neutral pastel styling for detailed (non-condensed) view */
   display: flex;
   flex-direction: column;
-  background: #ffffff12;
-  border: 1px solid #ffffff25;
-  backdrop-filter: blur(6px);
-  padding: 26px 28px 30px;
-  margin: 22px auto 0;
+  background: linear-gradient(140deg, #ffffff, #f4f9ff 55%, #e9f6ff);
+  border: 3px solid #d3e8f4;
+  backdrop-filter: blur(4px);
+  padding: 26px 28px 32px;
+  margin: 24px auto 0;
   border-radius: 26px;
-  color: #fff;
-  max-width: 760px;
+  color: #233042;
+  max-width: 860px;
   width: 100%;
-  box-sizing: border-box; /* ensure padding doesn't cause overflow */
-  box-shadow: 0 8px 26px -10px #000c;
+  box-sizing: border-box;
+  box-shadow: 0 8px 24px -12px rgba(28, 55, 90, 0.25);
   position: relative;
   overflow: hidden;
   transition:
     background 0.35s,
     box-shadow 0.3s,
     transform 0.3s;
-  overscroll-behavior: contain;
   &:before {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 18% 12%, #ffffff2a, transparent 65%);
-    opacity: 0.55;
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.6),
+      transparent 70%
+    );
     pointer-events: none;
   }
+  &:after {
+    content: "";
+  }
   &:hover {
-    /* subtle lift */
-    background: #ffffff18;
-    box-shadow: 0 14px 40px -12px #000d;
-    transform: translateY(-4px);
+    background: linear-gradient(140deg, #ffffff, #eef6ff 55%, #e3f4ff);
+    box-shadow: 0 14px 34px -14px rgba(28, 55, 90, 0.35);
+    transform: translateY(-3px);
   }
   @media (max-width: 840px) {
-    max-width: calc(100vw - 48px); /* side gutters */
+    max-width: calc(100vw - 48px);
   }
   @media (max-width: 640px) {
-    padding: 18px 16px 22px;
-    border-radius: 18px;
-    margin-top: 18px;
-    max-width: calc(100vw - 24px); /* narrower gutters */
+    padding: 22px 18px 26px;
+    border-radius: 22px;
+    margin-top: 20px;
+    max-width: calc(100vw - 24px);
   }
 `;
 
@@ -85,12 +89,13 @@ const CardsGrid = styled.div`
 `;
 
 const TickerCard = styled.div`
-  background: #ffffff15;
-  border: 1px solid #ffffff30;
+  background: linear-gradient(145deg, #ffffffee, #fff6fdee 55%, #f1fbff);
+  border: 3px solid #ffe0f299;
   backdrop-filter: blur(5px);
-  padding: 22px 22px 24px;
-  border-radius: 22px;
-  color: #fff;
+  padding: 24px 22px 26px;
+  border-radius: 26px;
+  color: #444;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -99,43 +104,69 @@ const TickerCard = styled.div`
   position: relative;
   overflow: hidden;
   min-height: 250px;
-  box-shadow: 0 4px 14px -4px #0009;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.18);
   transition:
     transform 0.25s,
     box-shadow 0.25s,
-    background 0.4s;
-  box-sizing: border-box; /* prevent internal padding overflow */
+    background 0.4s,
+    rotate 0.35s;
+  box-sizing: border-box;
   max-width: 100%;
+  &:before {
+    content: "🎈";
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-size: 1.25rem;
+    opacity: 0.35;
+  }
+  &:after {
+    content: "⭐";
+    position: absolute;
+    bottom: 10px;
+    right: 14px;
+    font-size: 1.15rem;
+    opacity: 0.28;
+  }
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 34px -12px #000d;
-    background: #ffffff28;
+    transform: translateY(-6px) rotate(-1deg);
+    box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.25);
+  }
+  &:active {
+    transform: translateY(-2px);
   }
   @media (max-width: 640px) {
-    padding: 18px 18px 22px;
-    border-radius: 18px;
+    padding: 20px 18px 22px;
+    border-radius: 22px;
   }
 `;
 
 // Restored: badge for ticker symbol label
 const TickerBadge = styled.div`
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 1.3px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
-  background: #ffffff22;
-  padding: 4px 10px 5px;
-  border-radius: 14px;
-  align-self: center; /* center horizontally in card */
-  margin-bottom: 6px;
+  background: #e2f0ff;
+  padding: 6px 14px 7px;
+  border-radius: 18px;
+  align-self: center;
+  margin-bottom: 8px;
   backdrop-filter: blur(4px);
   box-shadow:
-    0 1px 2px -1px #0008 inset,
-    0 0 0 1px #ffffff1f;
-  display: inline-flex; /* ensure vertical centering */
-  align-items: center; /* vertical centering */
-  justify-content: center; /* horizontal centering for dynamic width */
-  line-height: 1; /* tighter vertical alignment */
+    0 1px 2px -1px #0004 inset,
+    0 0 0 1px #ffffffaa;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: #1d3d5c;
+  position: relative;
+  &:after {
+    content: "\\2728";
+    margin-left: 6px;
+    font-size: 0.75rem;
+  }
 `;
 
 // New alignment helpers
@@ -223,13 +254,14 @@ const DetailLogoWrap = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 14px;
-  background: #ffffff10;
-  border: 1px solid #ffffff22;
-  border-radius: 20px;
+  padding: 14px 16px;
+  background: #ffffffd9;
+  border: 2px solid #ffdff1;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.18);
   @media (max-width: 640px) {
     width: 120px;
-    padding: 8px 10px;
+    padding: 10px 12px;
   }
 `;
 
@@ -254,20 +286,20 @@ const DetailDisplayName = styled.div`
 
 const DetailTickerSymbol = styled.span`
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 1.6px;
-  padding: 4px 10px 5px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #f39c12, #e74c3c, #9b59b6);
-  -webkit-background-clip: text;
-  color: transparent;
-  position: relative;
-  &:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: #ffffff15;
-    border-radius: 14px;
+  padding: 6px 14px 7px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #8fd3fe, #ffe07d, #b5f2c8);
+  color: #1d3d5c;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.25);
+  &:after {
+    content: "⚡";
+    font-size: 0.85rem;
   }
 `;
 
@@ -284,24 +316,26 @@ const DetailValueBlock = styled.div`
 `;
 
 const BigDollar = styled.div`
-  font-size: clamp(1.6rem, 3vw, 2.4rem);
-  font-weight: 700;
-  background: linear-gradient(90deg, #ffffff, #d5dbe0);
-  -webkit-background-clip: text;
-  color: transparent;
+  font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+  font-weight: 800;
+  color: #153552;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 `;
 
 const SharesLine = styled.div`
   font-size: 0.72rem;
   letter-spacing: 0.5px;
-  opacity: 0.75;
+  opacity: 0.85;
+  color: #5a2554;
 `;
 
 const Divider = styled.div`
-  height: 1px;
+  height: 2px;
   width: 100%;
-  background: linear-gradient(90deg, transparent, #ffffff35, transparent);
-  margin: 26px 0 14px;
+  background: linear-gradient(90deg, #ffd9f7, #ffe6c7, #c7f0ff);
+  margin: 26px 0 18px;
+  border-radius: 2px;
 `;
 
 const StatsGrid = styled.div`
@@ -320,9 +354,9 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: #ffffff10;
-  border: 1px solid #ffffff18;
-  padding: 14px 16px 16px;
+  background: linear-gradient(145deg, #ffffff, #f2f9ff 55%, #eef7fa);
+  border: 2px solid #d7e9f5;
+  padding: 16px 16px 18px;
   border-radius: 18px;
   display: flex;
   flex-direction: column;
@@ -331,20 +365,24 @@ const StatCard = styled.div`
   font-size: 0.78rem;
   letter-spacing: 0.3px;
   line-height: 1.2;
+  box-shadow: 0 4px 12px -8px rgba(0, 0, 0, 0.12);
   &:before {
-    /* subtle glow */
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(145deg, #ffffff18, transparent 75%);
     border-radius: 18px;
-    opacity: 0.6;
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.7),
+      transparent 70%
+    );
+    opacity: 0.55;
     pointer-events: none;
   }
   @media (max-width: 640px) {
     padding: 12px 12px 14px;
     font-size: 0.7rem;
-    border-radius: 14px;
+    border-radius: 16px;
   }
 `;
 
@@ -352,27 +390,30 @@ const StatLabel = styled.div`
   text-transform: uppercase;
   font-size: 0.55rem;
   letter-spacing: 1.3px;
-  opacity: 0.65;
-  font-weight: 600;
+  opacity: 0.75;
+  font-weight: 700;
+  color: #1d3d5c;
 `;
 
 const StatValue = styled.div`
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 6px;
+  color: #233042;
 `;
 
 const LotsList = styled.div`
   margin-top: 20px;
-  font-size: 0.6rem;
-  opacity: 0.55;
+  font-size: 0.65rem;
+  opacity: 0.65;
   letter-spacing: 0.4px;
   line-height: 1.4;
   word-break: break-word;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
   @media (max-width: 640px) {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     line-height: 1.3;
     margin-top: 16px;
   }
@@ -395,11 +436,9 @@ function Ticker({
   display,
   ticker,
   condensed,
-  expanded,
-  onToggle,
 }) {
   const avgCost = parseFloat(averageCost);
-  const difference = current - averageCost;
+  const difference = current - avgCost; // use parsed value
   const percentChange = avgCost ? (difference / avgCost) * 100 : 0;
   const percentChangeDisplay = isFinite(percentChange)
     ? percentChange.toFixed(2)
@@ -409,6 +448,9 @@ function Ticker({
   const currentValue = (current * shares).toFixed(2);
   const yourChange = (currentValue - originalValue).toFixed(2);
   const yourChangeIsNegative = yourChange < 0;
+  const formattedAverageCost = isNaN(avgCost)
+    ? averageCost
+    : avgCost.toFixed(2);
   const lotsStrings = [];
 
   if (lots) {
@@ -420,11 +462,14 @@ function Ticker({
   if (condensed) {
     return (
       <TickerCard>
-        <TickerBadge style={{ minHeight: 16 }}>{ticker}</TickerBadge>
+        <TickerBadge aria-label={`ticker symbol ${ticker}`}>
+          {ticker}
+        </TickerBadge>
         <LogoSlot>
           <TickerImage
             src={image}
             style={{ width: 110, maxWidth: 130, height: "auto" }}
+            alt={`${display} logo`}
           />
         </LogoSlot>
         <NameSlot>
@@ -432,20 +477,22 @@ function Ticker({
         </NameSlot>
         <PriceSlot>
           <PriceLine>
-            <div style={{ fontWeight: 700, fontSize: "1.15rem" }}>
+            <div
+              style={{ fontWeight: 800, fontSize: "1.2rem", color: "#3b2b55" }}
+            >
               ${currentValue}
             </div>
-            <div style={{ fontSize: ".78rem", opacity: 0.7 }}>
+            <div style={{ fontSize: ".75rem", opacity: 0.7, color: "#555" }}>
               {shares} sh @ ${current}
             </div>
           </PriceLine>
         </PriceSlot>
         <ChangeSlot>
           <ChangeLine
-            style={{ color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71" }}
+            style={{ color: yourChangeIsNegative ? "#e74c3c" : "#1e9e52" }}
           >
             <Icon isNegative={yourChangeIsNegative} />{" "}
-            {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)} (
+            {yourChangeIsNegative ? "-" : "+"}${Math.abs(yourChange)} (
             {percentChangeDisplay}%)
           </ChangeLine>
         </ChangeSlot>
@@ -454,6 +501,11 @@ function Ticker({
   }
 
   // Enhanced detailed view
+  const formattedCurrentValue = parseFloat(currentValue).toLocaleString(
+    undefined,
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+  );
+
   return (
     <TickerContainer aria-label={`${display} detailed performance`}>
       <DetailHeader>
@@ -465,7 +517,7 @@ function Ticker({
           <DetailTickerSymbol>{ticker}</DetailTickerSymbol>
         </DetailNameBlock>
         <DetailValueBlock>
-          <BigDollar>${currentValue}</BigDollar>
+          <BigDollar>${formattedCurrentValue}</BigDollar>
           <SharesLine>
             {shares} share{shares === 1 ? "" : "s"} @ ${current}
           </SharesLine>
@@ -474,33 +526,26 @@ function Ticker({
       <Divider />
       <StatsGrid>
         <StatCard>
-          <StatLabel>Your Change</StatLabel>
+          <StatLabel>Change 💥</StatLabel>
           <StatValue
-            style={{
-              color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71",
-            }}
+            style={{ color: yourChangeIsNegative ? "#e74c3c" : "#1e9e52" }}
           >
-            <Icon isNegative={yourChangeIsNegative} />
-            {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)}
+            <Icon isNegative={yourChangeIsNegative} />{" "}
+            {yourChangeIsNegative ? "-" : "+"}${Math.abs(yourChange)}
           </StatValue>
         </StatCard>
         <StatCard>
-          <StatLabel>Current Price</StatLabel>
+          <StatLabel>Price Now 🏷️</StatLabel>
           <StatValue>${current}</StatValue>
         </StatCard>
         <StatCard>
-          <StatLabel>Purchase Price</StatLabel>
-          <StatValue>${averageCost}</StatValue>
+          <StatLabel>Bought At 🛒</StatLabel>
+          <StatValue>${formattedAverageCost}</StatValue>
         </StatCard>
         <StatCard>
-          <StatLabel>Stock Price Change</StatLabel>
-          <StatValue
-            style={{
-              color: isNegative ? "#e74c3c" : "#2ecc71",
-            }}
-          >
-            <Icon isNegative={isNegative} /> ${difference.toFixed(2)} (
-            {percentChange.toFixed(2)}%)
+          <StatLabel>Move % 🚀</StatLabel>
+          <StatValue style={{ color: isNegative ? "#e74c3c" : "#1e9e52" }}>
+            <Icon isNegative={isNegative} /> {percentChange.toFixed(2)}%
           </StatValue>
         </StatCard>
       </StatsGrid>

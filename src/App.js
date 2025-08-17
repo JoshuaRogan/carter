@@ -8,11 +8,12 @@ import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
   body { 
-    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-    background: radial-gradient(circle at 20% 20%, #2c3e50, #1b2735 60%);
-    color: #ecf0f1;
+    font-family: 'Baloo 2', 'Fredoka', 'Comic Sans MS', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg,#fff9e6 0%, #e6f7ff 45%, #e8fce9 85%);
+    color: #2b3742;
     margin: 0; 
     min-height: 100vh; 
+    -webkit-font-smoothing: antialiased;
   }
 `;
 
@@ -55,11 +56,11 @@ const CardsGrid = styled.div`
 `;
 
 const Card = styled.button`
-  background: #ffffff10;
-  border: 1px solid #ffffff22;
-  backdrop-filter: blur(6px);
-  border-radius: 18px;
-  padding: 22px 20px 26px;
+  background: linear-gradient(145deg, #ffffff, #f3faff 60%, #eefcf1);
+  border: 3px solid ${(p) => (p.$color ? p.$color + "55" : "#c9e2ef")};
+  backdrop-filter: blur(4px);
+  border-radius: 22px;
+  padding: 26px 22px 30px;
   text-align: left;
   cursor: pointer;
   position: relative;
@@ -68,48 +69,33 @@ const Card = styled.button`
     transform 0.25s,
     box-shadow 0.25s,
     background 0.4s;
-  color: #ecf0f1;
+  color: #2b3742;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-
+  gap: 12px;
+  box-shadow: 0 6px 16px -6px rgba(20, 38, 60, 0.18);
   &:before {
-    content: "";
+    content: "🧩";
     position: absolute;
-    inset: 0;
-    background: ${(p) => p.$color}22;
-    opacity: 0.7;
-  }
-  &:after {
-    content: "";
-    position: absolute;
-    top: -40%;
-    left: -40%;
-    width: 180%;
-    height: 180%;
-    background: radial-gradient(
-      circle at 30% 30%,
-      ${(p) => p.$color}55,
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.45s;
+    top: 10px;
+    right: 12px;
+    font-size: 1.15rem;
+    opacity: 0.45;
   }
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.4);
-    background: #ffffff18;
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px -10px rgba(20, 38, 60, 0.28);
   }
-  &:hover:after {
-    opacity: 1;
+  &:active {
+    transform: translateY(-2px);
   }
   border: none;
 `;
 
 const CardTitle = styled.div`
-  font-size: 1.25rem;
+  font-size: 1.35rem;
 `;
 
 const FamBadge = styled.span`
@@ -126,19 +112,19 @@ const FamBadge = styled.span`
 
 const Heading = styled.h1`
   text-align: center;
-  margin: 32px 0 8px;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  background: linear-gradient(90deg, #f39c12, #e74c3c, #9b59b6);
+  margin: 30px 0 6px;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  background: linear-gradient(90deg, #ffb347, #4fc3f7, #7cd97c);
   -webkit-background-clip: text;
   color: transparent;
 `;
 
 const SubHeading = styled.p`
   text-align: center;
-  font-weight: 400;
-  margin: 0 0 42px;
-  font-size: 1rem;
-  opacity: 0.8;
+  font-weight: 500;
+  margin: 0 0 38px;
+  font-size: 1.05rem;
+  color: #435362;
 `;
 
 function niceFamilyName(fam) {
@@ -165,12 +151,20 @@ function Home() {
   ].filter((f) => grouped[f]);
   return (
     <PageWrapper>
-      <Heading>Family Stock Portfolios</Heading>
-      <SubHeading>Tap a card to view a live snapshot</SubHeading>
+      <Heading>Our Family Stocks</Heading>
+      <SubHeading>Tap a card to peek at how they are doing!</SubHeading>
       {orderedFamilies.map((fam) => (
         <Section key={fam} aria-label={`${niceFamilyName(fam)} family section`}>
           {orderedFamilies.length > 1 && (
-            <SectionTitle>{niceFamilyName(fam)} Family</SectionTitle>
+            <SectionTitle
+              style={{
+                color: "#555",
+                WebkitBackgroundClip: "initial",
+                background: "none",
+              }}
+            >
+              {niceFamilyName(fam)} Family
+            </SectionTitle>
           )}
           <CardsGrid>
             {grouped[fam].map((p) => (
@@ -180,10 +174,20 @@ function Home() {
                 onClick={() => navigate(`/portfolio/${p.id}`)}
                 aria-label={`${p.name}'s portfolio`}
               >
-                <FamBadge $color={p.color}>{p.family}</FamBadge>
-                <CardTitle>{p.name}'s Portfolio</CardTitle>
-                <div style={{ fontSize: ".75rem", opacity: 0.7 }}>
-                  Stock holdings & performance
+                <FamBadge
+                  $color={p.color}
+                  style={{ background: p.color, borderRadius: 10 }}
+                >
+                  {p.family}
+                </FamBadge>
+                <CardTitle>{p.name}'s Stocks</CardTitle>
+                <div style={{ fontSize: ".8rem", color: "#445361" }}>
+                  See value & growth 🚀
+                </div>
+                <div
+                  style={{ marginTop: 4, fontSize: ".7rem", color: "#5d6b78" }}
+                >
+                  Tap to open
                 </div>
               </Card>
             ))}

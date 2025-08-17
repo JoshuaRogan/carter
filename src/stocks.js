@@ -8,11 +8,56 @@ import trinityStocks from "./trinityStocks.json";
 import grantStocks from "./grantStocks.json";
 import { getStockData } from "./stockApi";
 
+// Compute weighted average cost & totalShares from lots
+export function computeLotAverages(lots) {
+  if (!lots || !Array.isArray(lots) || lots.length === 0) {
+    return { averageCost: undefined, totalShares: 0 };
+  }
+  let totalShares = 0;
+  let totalCost = 0;
+  for (const lot of lots) {
+    const lotShares = parseFloat(lot.shares);
+    const lotPrice = parseFloat(lot.price);
+    if (!isNaN(lotShares) && lotShares > 0 && !isNaN(lotPrice)) {
+      totalShares += lotShares;
+      totalCost += lotShares * lotPrice;
+    }
+  }
+  if (totalShares <= 0) {
+    return { averageCost: undefined, totalShares: 0 };
+  }
+  return {
+    averageCost: parseFloat((totalCost / totalShares).toFixed(4)),
+    totalShares,
+  };
+}
+
 async function addPriceToStocks(stock) {
+  if (stock.lots) {
+    const { averageCost, totalShares } = computeLotAverages(stock.lots);
+    if (averageCost !== undefined) {
+      stock.averageCost = averageCost;
+      // Always override shares with total lot shares to ensure calculations use lots, ignoring any JSON shares field
+      stock.shares = totalShares;
+    } else {
+      // No valid lots; fall back to parsing existing fields
+      stock.averageCost = parseFloat(stock.averageCost);
+      stock.shares =
+        typeof stock.shares === "number"
+          ? stock.shares
+          : parseFloat(stock.shares);
+    }
+  } else {
+    stock.averageCost = parseFloat(stock.averageCost);
+    stock.shares =
+      typeof stock.shares === "number"
+        ? stock.shares
+        : parseFloat(stock.shares);
+  }
+
   stock.current = await getStockData(stock.ticker);
   if (!stock.current || isNaN(stock.current)) {
-    // Fallback to average cost if live price not available
-    stock.current = parseFloat(stock.averageCost);
+    stock.current = stock.averageCost;
   }
   return stock;
 }

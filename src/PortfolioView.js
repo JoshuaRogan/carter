@@ -9,7 +9,8 @@ const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: ${(p) => `linear-gradient(135deg, ${p.$color} 0%, #0f1824 70%)`};
+  background: ${(p) =>
+    `linear-gradient(135deg, ${p.$color} 0%, #f3fbe6 25%, #e6f6ff 65%, #fef9e3 100%)`};
   position: relative;
 `;
 
@@ -54,33 +55,45 @@ const Title = styled.h1`
 const MetricsStrip = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  padding: 0 24px 10px;
+  gap: 16px;
+  padding: 4px 24px 14px;
 `;
 
 const MetricCard = styled.div`
   flex: 1 1 180px;
-  background: #ffffff15;
-  border: 1px solid #ffffff25;
-  padding: 14px 16px 18px;
-  border-radius: 16px;
-  color: #fff;
+  background: linear-gradient(145deg, #ffffff, #f2f9ff 45%, #ecf9f0);
+  border: 3px solid #d2e8f3;
+  padding: 18px 18px 22px;
+  border-radius: 20px;
+  color: #233642;
   position: relative;
   overflow: hidden;
   min-width: 150px;
+  box-shadow: 0 6px 14px -6px rgba(20, 54, 78, 0.18);
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+  &:before {
+    content: "\u269C";
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    opacity: 0.35;
+    font-size: 1.25rem;
+    color: #2d6f8c;
+  }
 `;
 
 const MetricLabel = styled.div`
-  font-size: 0.65rem;
-  letter-spacing: 1px;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   opacity: 0.75;
+  font-weight: 700;
 `;
 
 const MetricValue = styled.div`
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-top: 4px;
+  font-size: 1.55rem;
+  font-weight: 700;
+  margin-top: 2px;
 `;
 
 const Content = styled.div`
@@ -97,14 +110,14 @@ const Loading = styled.div`
 
 const ViewToggleBtn = styled.button`
   margin-left: auto;
-  background: #ffffff20;
-  border: 1px solid #ffffff35;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-  font-weight: 600;
+  background: linear-gradient(145deg, #fffbe2, #e2f5ff);
+  border: 2px solid #c3e3ef;
+  color: #2b4d5e;
+  padding: 12px 18px;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  letter-spacing: 0.6px;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -113,12 +126,13 @@ const ViewToggleBtn = styled.button`
   transition:
     background 0.25s,
     transform 0.25s;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
   &:hover {
-    background: #ffffff35;
-    transform: translateY(-2px);
+    background: linear-gradient(145deg, #fff4c5, #d8f1ff);
+    transform: translateY(-3px) rotate(-1deg);
   }
   &:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
   }
 `;
 
@@ -149,6 +163,7 @@ export default function PortfolioView({ id, onBack }) {
   const delta = total - invested;
   const pct = invested === 0 ? 0 : (delta / invested) * 100;
   const negative = delta < 0;
+  const friendlyDeltaLabel = negative ? "Down" : "Up";
 
   return (
     <Wrapper $color={portfolio.color}>
@@ -161,33 +176,31 @@ export default function PortfolioView({ id, onBack }) {
           type="button"
           aria-pressed={condensed}
           onClick={() => setCondensed((c) => !c)}
-          title={
-            condensed ? "Switch to detailed view" : "Switch to compact view"
-          }
+          title={condensed ? "Show Bigger Cards" : "Show Small Cards"}
         >
-          {condensed ? "Detailed View" : "Compact View"}
+          {condensed ? "Big View 🔍" : "Small View 🧩"}
         </ViewToggleBtn>
       </HeaderBar>
 
       <MetricsStrip>
         <MetricCard>
-          <MetricLabel>Total Value</MetricLabel>
+          <MetricLabel>Treasure 💰</MetricLabel>
           <MetricValue>${total.toFixed(2)}</MetricValue>
         </MetricCard>
         <MetricCard>
-          <MetricLabel>Invested</MetricLabel>
+          <MetricLabel>Put In 🪙</MetricLabel>
           <MetricValue>${invested.toFixed(2)}</MetricValue>
         </MetricCard>
         <MetricCard>
-          <MetricLabel>Change</MetricLabel>
-          <MetricValue style={{ color: negative ? "#e74c3c" : "#2ecc71" }}>
-            {negative ? "-" : ""}${Math.abs(delta).toFixed(2)}
+          <MetricLabel>{friendlyDeltaLabel} 📈</MetricLabel>
+          <MetricValue style={{ color: negative ? "#e74c3c" : "#1e9e52" }}>
+            {negative ? "-" : "+"}${Math.abs(delta).toFixed(2)}
           </MetricValue>
         </MetricCard>
         <MetricCard>
-          <MetricLabel>Change %</MetricLabel>
-          <MetricValue style={{ color: negative ? "#e74c3c" : "#2ecc71" }}>
-            {negative ? "-" : ""}
+          <MetricLabel>Growth % 🌱</MetricLabel>
+          <MetricValue style={{ color: negative ? "#e74c3c" : "#1e9e52" }}>
+            {negative ? "-" : "+"}
             {Math.abs(pct).toFixed(2)}%
           </MetricValue>
         </MetricCard>
