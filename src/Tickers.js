@@ -436,6 +436,8 @@ function Ticker({
   display,
   ticker,
   condensed,
+  onSelectTicker,
+  highlight,
 }) {
   const avgCost = parseFloat(averageCost);
   const difference = current - avgCost; // use parsed value
@@ -461,7 +463,18 @@ function Ticker({
 
   if (condensed) {
     return (
-      <TickerCard>
+      <TickerCard
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelectTicker && onSelectTicker(ticker)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelectTicker && onSelectTicker(ticker);
+          }
+        }}
+        aria-label={`View detailed performance for ${display}`}
+      >
         <TickerBadge aria-label={`ticker symbol ${ticker}`}>
           {ticker}
         </TickerBadge>
@@ -507,7 +520,19 @@ function Ticker({
   );
 
   return (
-    <TickerContainer aria-label={`${display} detailed performance`}>
+    <TickerContainer
+      aria-label={`${display} detailed performance`}
+      data-ticker={ticker}
+      style={
+        highlight
+          ? {
+              boxShadow:
+                "0 0 0 4px #ffde89, 0 0 0 8px #ffd36a80, 0 14px 34px -14px rgba(28,55,90,0.35)",
+              transform: "translateY(-4px)",
+            }
+          : undefined
+      }
+    >
       <DetailHeader>
         <DetailLogoWrap>
           <TickerImage src={image} style={{ width: "100%", maxWidth: 150 }} />
@@ -556,7 +581,28 @@ function Ticker({
   );
 }
 
-export default function Tickers({ data, condensed }) {
+export default function Tickers({
+  data,
+  condensed,
+  onSelectTicker,
+  focusTicker,
+}) {
+  React.useEffect(() => {
+    if (!condensed && focusTicker) {
+      // give layout a tick
+      const id = requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-ticker="${focusTicker}"]`);
+        if (el) {
+          el.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "nearest",
+          });
+        }
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [condensed, focusTicker]);
   if (data.length === 0) {
     return "Loading...";
   }
@@ -565,7 +611,12 @@ export default function Tickers({ data, condensed }) {
       <>
         <CardsGrid>
           {data.map((stock) => (
-            <Ticker key={stock.ticker} {...stock} condensed />
+            <Ticker
+              key={stock.ticker}
+              {...stock}
+              condensed
+              onSelectTicker={onSelectTicker}
+            />
           ))}
         </CardsGrid>
       </>
@@ -575,7 +626,12 @@ export default function Tickers({ data, condensed }) {
     <Container>
       <TickerTableContainer>
         {data.map((stock) => (
-          <Ticker key={stock.ticker} {...stock} />
+          <Ticker
+            key={stock.ticker}
+            {...stock}
+            onSelectTicker={onSelectTicker}
+            highlight={focusTicker === stock.ticker}
+          />
         ))}
       </TickerTableContainer>
     </Container>

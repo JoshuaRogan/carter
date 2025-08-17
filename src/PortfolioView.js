@@ -141,6 +141,7 @@ export default function PortfolioView({ id, onBack }) {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [condensed, setCondensed] = useState(true); // toggle between compact and detailed
+  const [selectedTicker, setSelectedTicker] = useState(undefined); // ticker symbol chosen from condensed view
 
   useEffect(() => {
     let active = true;
@@ -165,6 +166,23 @@ export default function PortfolioView({ id, onBack }) {
   const negative = delta < 0;
   const friendlyDeltaLabel = negative ? "Down" : "Up";
 
+  const handleSelectTicker = (ticker) => {
+    // User clicked a condensed card: expand to detailed view and focus that ticker
+    setSelectedTicker(ticker);
+    setCondensed(false);
+  };
+
+  const handleToggleView = () => {
+    setCondensed((c) => {
+      const next = !c;
+      // If switching back to condensed, clear any prior selection
+      if (next) {
+        setSelectedTicker(undefined);
+      }
+      return next;
+    });
+  };
+
   return (
     <Wrapper $color={portfolio.color}>
       <HeaderBar>
@@ -175,7 +193,7 @@ export default function PortfolioView({ id, onBack }) {
         <ViewToggleBtn
           type="button"
           aria-pressed={condensed}
-          onClick={() => setCondensed((c) => !c)}
+          onClick={handleToggleView}
           title={condensed ? "Show Bigger Cards" : "Show Small Cards"}
         >
           {condensed ? "Big View 🔍" : "Small View 🧩"}
@@ -210,7 +228,13 @@ export default function PortfolioView({ id, onBack }) {
         {loading ? (
           <Loading>Loading live prices…</Loading>
         ) : (
-          <Tickers data={stocks} name={portfolio.name} condensed={condensed} />
+          <Tickers
+            data={stocks}
+            name={portfolio.name}
+            condensed={condensed}
+            onSelectTicker={handleSelectTicker}
+            focusTicker={selectedTicker}
+          />
         )}
       </Content>
     </Wrapper>
