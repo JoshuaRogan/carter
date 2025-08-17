@@ -1,5 +1,4 @@
 import React from "react";
-import { sumStocks, sumInvestmentAmount } from "./stocks";
 import styled from "styled-components";
 import { ImArrowUp, ImArrowDown } from "react-icons/im";
 
@@ -11,31 +10,15 @@ const Container = styled.div`
   padding-top: 15px;
 `;
 
-const PortfolioName = styled.div`
-  color: white;
-  font-size: 18px;
-  text-align: center;
-`;
-
-const CartersMoney = styled.div`
-  color: white;
-  font-size: 10vh;
-  flex-basis: 100%;
-  justify-self: center;
-  align-self: center;
-`;
-
-const DeltaAmount = styled.div`
-  font-weight: bold;
-  font-size: 3vh;
-  text-align: center;
-`;
-
 const TickerTableContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 15px;
   text-align: center;
+  @media (max-width: 640px) {
+    padding: 0 12px 4px;
+    gap: 10px;
+  }
 `;
 
 const TickerContainer = styled.div`
@@ -71,6 +54,11 @@ const TickerContainer = styled.div`
     background: #ffffff18;
     box-shadow: 0 14px 40px -12px #000d;
     transform: translateY(-4px);
+  }
+  @media (max-width: 640px) {
+    padding: 18px 18px 22px;
+    border-radius: 18px;
+    margin-top: 18px;
   }
 `;
 
@@ -206,6 +194,11 @@ const DetailHeader = styled.div`
   align-items: center;
   gap: 34px;
   flex-wrap: wrap;
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+  }
 `;
 
 const DetailLogoWrap = styled.div`
@@ -218,6 +211,10 @@ const DetailLogoWrap = styled.div`
   background: #ffffff10;
   border: 1px solid #ffffff22;
   border-radius: 20px;
+  @media (max-width: 640px) {
+    width: 120px;
+    padding: 8px 10px;
+  }
 `;
 
 const DetailNameBlock = styled.div`
@@ -226,6 +223,10 @@ const DetailNameBlock = styled.div`
   gap: 4px;
   min-width: 160px;
   flex: 1 1 auto;
+  @media (max-width: 640px) {
+    align-items: center;
+    min-width: 0;
+  }
 `;
 
 const DetailDisplayName = styled.div`
@@ -260,6 +261,10 @@ const DetailValueBlock = styled.div`
   align-items: flex-end;
   margin-left: auto;
   gap: 6px;
+  @media (max-width: 640px) {
+    align-items: center;
+    margin-left: 0;
+  }
 `;
 
 const BigDollar = styled.div`
@@ -289,6 +294,13 @@ const StatsGrid = styled.div`
   gap: 18px 28px;
   width: 100%;
   margin-top: 4px;
+  @media (max-width: 800px) {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px 16px;
+  }
 `;
 
 const StatCard = styled.div`
@@ -312,6 +324,11 @@ const StatCard = styled.div`
     border-radius: 18px;
     opacity: 0.6;
     pointer-events: none;
+  }
+  @media (max-width: 640px) {
+    padding: 12px 12px 14px;
+    font-size: 0.7rem;
+    border-radius: 14px;
   }
 `;
 
@@ -337,6 +354,12 @@ const LotsList = styled.div`
   opacity: 0.55;
   letter-spacing: 0.4px;
   line-height: 1.4;
+  word-break: break-word;
+  @media (max-width: 640px) {
+    font-size: 0.65rem;
+    line-height: 1.3;
+    margin-top: 16px;
+  }
 `;
 
 function Icon({ isNegative }) {
@@ -358,11 +381,13 @@ function Ticker({
   condensed,
   expanded,
   onToggle,
-  ...rest
 }) {
   const avgCost = parseFloat(averageCost);
   const difference = current - averageCost;
-  const percentChange = (difference / avgCost) * 100;
+  const percentChange = avgCost ? (difference / avgCost) * 100 : 0;
+  const percentChangeDisplay = isFinite(percentChange)
+    ? percentChange.toFixed(2)
+    : "0.00";
   const isNegative = difference < 0;
   const originalValue = (avgCost * shares).toFixed(2);
   const currentValue = (current * shares).toFixed(2);
@@ -404,7 +429,8 @@ function Ticker({
             style={{ color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71" }}
           >
             <Icon isNegative={yourChangeIsNegative} />{" "}
-            {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)}
+            {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)} (
+            {percentChangeDisplay}%)
           </ChangeLine>
         </ChangeSlot>
       </TickerCard>
@@ -469,17 +495,10 @@ function Ticker({
   );
 }
 
-export default function Tickers({ data, name, condensed }) {
-  const stocksSum = sumStocks(data);
-  const investmentAmount = sumInvestmentAmount(data);
-  const investmentDifference = stocksSum - investmentAmount;
-  const percentChange = (investmentDifference / investmentAmount) * 100;
-  const isNegative = investmentDifference < 0;
-
+export default function Tickers({ data, condensed }) {
   if (data.length === 0) {
     return "Loading...";
   }
-
   if (condensed) {
     return (
       <>
@@ -491,20 +510,12 @@ export default function Tickers({ data, name, condensed }) {
       </>
     );
   }
-
   return (
     <Container>
-      <PortfolioName> {name}'s Portfolio </PortfolioName>
-      <CartersMoney>${stocksSum.toFixed(2)}</CartersMoney>
-      <DeltaAmount>
-        <Icon isNegative={isNegative} /> ${investmentDifference.toFixed(2)} (
-        {percentChange.toFixed(2)}%)
-      </DeltaAmount>
-
       <TickerTableContainer>
-        {data.map((stock) => {
-          return <Ticker key={stock.ticker} {...stock}></Ticker>;
-        })}
+        {data.map((stock) => (
+          <Ticker key={stock.ticker} {...stock} />
+        ))}
       </TickerTableContainer>
     </Container>
   );

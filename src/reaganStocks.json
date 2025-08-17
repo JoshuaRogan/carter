@@ -5,7 +5,7 @@
     "ticker": "DIS",
     "exchange": "NYSE",
     "shares": 1,
-    "averageCost": "28.93",
+    "averageCost": "121",
     "lots": [
       {
         "date": "2020-10-01",

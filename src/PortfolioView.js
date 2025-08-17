@@ -95,10 +95,38 @@ const Loading = styled.div`
   opacity: 0.85;
 `;
 
+const ViewToggleBtn = styled.button`
+  margin-left: auto;
+  background: #ffffff20;
+  border: 1px solid #ffffff35;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  transition:
+    background 0.25s,
+    transform 0.25s;
+  &:hover {
+    background: #ffffff35;
+    transform: translateY(-2px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 export default function PortfolioView({ id, onBack }) {
   const portfolio = getPortfolioById(id);
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [condensed, setCondensed] = useState(true); // toggle between compact and detailed
 
   useEffect(() => {
     let active = true;
@@ -129,6 +157,16 @@ export default function PortfolioView({ id, onBack }) {
           <ImArrowLeft />
         </BackBtn>
         <Title>{portfolio.name}'s Portfolio</Title>
+        <ViewToggleBtn
+          type="button"
+          aria-pressed={condensed}
+          onClick={() => setCondensed((c) => !c)}
+          title={
+            condensed ? "Switch to detailed view" : "Switch to compact view"
+          }
+        >
+          {condensed ? "Detailed View" : "Compact View"}
+        </ViewToggleBtn>
       </HeaderBar>
 
       <MetricsStrip>
@@ -159,7 +197,7 @@ export default function PortfolioView({ id, onBack }) {
         {loading ? (
           <Loading>Loading live prices…</Loading>
         ) : (
-          <Tickers data={stocks} name={portfolio.name} condensed={true} />
+          <Tickers data={stocks} name={portfolio.name} condensed={condensed} />
         )}
       </Content>
     </Wrapper>
