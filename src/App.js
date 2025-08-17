@@ -15,13 +15,40 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const PageWrapper = styled.div`
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 80px;
+  padding: 0 4%;
+  box-sizing: border-box;
+`;
+
+const Section = styled.section`
+  margin-bottom: 56px;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: clamp(1.4rem,3vw,2.1rem);
+  margin: 0 0 20px;
+  background: linear-gradient(90deg,#ffffff,#bdc3c7);
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: .5px;
+  position: relative;
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -6px;
+    height: 3px; width: 80px;
+    background: linear-gradient(90deg,#f39c12,#e74c3c,#9b59b6);
+    border-radius: 2px;
+  }
+`;
+
 const CardsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
   gap: 24px;
-  width: 90%;
-  max-width: 1200px;
-  margin: 40px auto 80px;
 `;
 
 const Card = styled.button`
@@ -80,20 +107,25 @@ const FamBadge = styled.span`
 
 const Heading = styled.h1`
   text-align: center;
-  margin-top: 32px;
+  margin: 32px 0 8px;
   font-size: clamp(1.8rem, 4vw, 3rem);
   background: linear-gradient(90deg,#f39c12,#e74c3c,#9b59b6);
   -webkit-background-clip: text;
   color: transparent;
 `;
 
-const SubHeading = styled.h2`
+const SubHeading = styled.p`
   text-align: center;
   font-weight: 400;
-  margin: 4px 0 28px;
+  margin: 0 0 42px;
   font-size: 1rem;
   opacity: .8;
 `;
+
+function niceFamilyName(fam) {
+  if (!fam) return '';
+  return fam.charAt(0).toUpperCase() + fam.slice(1);
+}
 
 function App() {
   const [selected, setSelected] = useState(null);
@@ -110,22 +142,40 @@ function App() {
 
   const visiblePortfolios = portfolios.filter(p => envSiteName === FAMILIES.LOCAL || p.family === envSiteName);
 
+  // Group by family
+  const grouped = visiblePortfolios.reduce((acc, p) => {
+    (acc[p.family] ||= []).push(p);
+    return acc;
+  }, {});
+
+  // Desired family order (only those present will render)
+  const orderedFamilies = [FAMILIES.ROGAN, FAMILIES.NOLE, FAMILIES.KERRIGAN, FAMILIES.TOKASH, FAMILIES.ROGAN_DIR].filter(f => grouped[f]);
+
   return (
     <>
       <GlobalStyle />
-      <Heading>Family Stock Portfolios</Heading>
-      <SubHeading>Tap a card to view a live snapshot</SubHeading>
-      <CardsGrid>
-        {visiblePortfolios.map(p => (
-          <Card key={p.id} $color={p.color} onClick={()=>setSelected(p.id)} aria-label={`${p.name}'s portfolio`}>
-            <FamBadge $color={p.color}>{p.family}</FamBadge>
-            <CardTitle>{p.name}'s Portfolio</CardTitle>
-            <div style={{fontSize:'.75rem',opacity:.7}}>Stock holdings & performance</div>
-          </Card>
+      <PageWrapper>
+        <Heading>Family Stock Portfolios</Heading>
+        <SubHeading>Tap a card to view a live snapshot</SubHeading>
+        {orderedFamilies.map(fam => (
+          <Section key={fam} aria-label={`${niceFamilyName(fam)} family section`}>
+            {orderedFamilies.length > 1 && (
+              <SectionTitle>{niceFamilyName(fam)} Family</SectionTitle>
+            )}
+            <CardsGrid>
+              {grouped[fam].map(p => (
+                <Card key={p.id} $color={p.color} onClick={()=>setSelected(p.id)} aria-label={`${p.name}'s portfolio`}>
+                  <FamBadge $color={p.color}>{p.family}</FamBadge>
+                  <CardTitle>{p.name}'s Portfolio</CardTitle>
+                  <div style={{fontSize:'.75rem',opacity:.7}}>Stock holdings & performance</div>
+                </Card>
+              ))}
+            </CardsGrid>
+          </Section>
         ))}
-      </CardsGrid>
-      {/* hidden text to satisfy legacy test if still present */}
-      <div style={{display:'none'}}>learn react</div>
+        {/* hidden text to satisfy legacy test if still present */}
+        <div style={{display:'none'}}>learn react</div>
+      </PageWrapper>
     </>
   );
 }
