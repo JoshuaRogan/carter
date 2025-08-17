@@ -494,7 +494,7 @@ function Home() {
               stockPerf.push({
                 key: p.id + ":" + s.ticker,
                 ticker: s.ticker,
-                display: s.ticker,
+                display: s.display,
                 ownerId: p.id,
                 ownerName: p.name,
                 pct: spct,

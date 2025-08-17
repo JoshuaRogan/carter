@@ -232,6 +232,149 @@ const MiniExplainList = styled.ul`
     line-height: 1.4;
   }
 `;
+const VideoWrap = styled.div`
+  width: 100%;
+  max-width: 780px;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  margin: 0 0 18px;
+  background: #000;
+  box-shadow:
+    0 12px 28px -14px rgba(0, 0, 0, 0.45),
+    0 4px 12px -4px rgba(0, 0, 0, 0.25);
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  @media (max-width: 620px) {
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+`;
+const CarouselContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 840px;
+  margin: 0 0 36px;
+  @media (max-width: 620px) {
+    margin-bottom: 28px;
+  }
+`;
+const CarouselHeader = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+  flex-wrap: wrap;
+`;
+const CarouselTitle = styled.h2`
+  margin: 0;
+  font-size: clamp(1.1rem, 2.6vw, 1.55rem);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #ffb347, #ff7eb3, #7cd97c);
+  -webkit-background-clip: text;
+  color: transparent;
+`;
+const NavBtns = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+const NavBtn = styled.button`
+  background: linear-gradient(135deg, #ffffffdd, #f2fbff);
+  border: 2px solid #cde3ec;
+  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2b3742;
+  box-shadow: 0 6px 16px -8px rgba(40, 70, 90, 0.35);
+  transition:
+    transform 0.25s,
+    background 0.35s;
+  &:hover {
+    transform: translateY(-4px);
+  }
+  &:active {
+    transform: translateY(-1px);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+`;
+const Dots = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+const DotBtn = styled.button`
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 0;
+  background: ${(p) =>
+    p.$active ? "linear-gradient(135deg,#ffcc33,#ff8a54)" : "#cfdfe6"};
+  box-shadow: ${(p) =>
+    p.$active
+      ? "0 0 0 3px #ffffffaa,0 4px 10px -4px rgba(0,0,0,.35)"
+      : "0 0 0 2px #ffffff88"};
+  cursor: pointer;
+  transition:
+    transform 0.25s,
+    background 0.35s;
+  &:hover {
+    transform: scale(1.2);
+  }
+  &:focus-visible {
+    outline: 3px solid #ffcc33;
+    outline-offset: 2px;
+  }
+`;
+const VideoMeta = styled.div`
+  font-size: 0.75rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.65;
+  margin-top: 2px;
+  text-align: center;
+`;
+const InlineNav = styled.div`
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 20px;
+`;
+const KidsHomeBtn = styled(ChoiceBtn)`
+  background: linear-gradient(135deg, #ffe27a, #ffcc33);
+  color: #5b3200;
+  padding: 12px 22px;
+  font-size: 0.85rem;
+  border-radius: 44px;
+  box-shadow: 0 6px 16px -8px rgba(120, 80, 10, 0.35);
+  @media (max-width: 620px) {
+    width: auto;
+  }
+`;
 
 function buildQuestions(difficulty = "basic") {
   // Basic: simpler language (ages ~4-5)
@@ -692,6 +835,7 @@ export default function KidsGameView() {
   const [showExplain, setShowExplain] = useState(false);
   const [done, setDone] = useState(false);
   const [learnIdx, setLearnIdx] = useState(0);
+  const [vidIdx, setVidIdx] = useState(0); // carousel index
 
   useEffect(() => {
     if (difficulty === "basic" || difficulty === "advanced") {
@@ -785,7 +929,41 @@ export default function KidsGameView() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [idx, done, learnIdx, difficulty]);
+  }, [idx, done, learnIdx, difficulty, vidIdx]);
+
+  const nextVideo = () => setVidIdx((i) => (i + 1) % introVideos.length);
+  const prevVideo = () =>
+    setVidIdx((i) => (i - 1 + introVideos.length) % introVideos.length);
+  const goVideo = (n) => setVidIdx(n);
+
+  // touch swipe support (lightweight)
+  const touchData = React.useRef(null);
+  const onTouchStart = (e) => {
+    touchData.current = { x: e.touches[0].clientX };
+  };
+  const onTouchEnd = (e) => {
+    if (!touchData.current) return;
+    const dx = e.changedTouches[0].clientX - touchData.current.x;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) nextVideo();
+      else prevVideo();
+    }
+    touchData.current = null;
+  };
+
+  const introVideos = [
+    {
+      id: "Epzr8azlxp8",
+      title: "Stocks for Kids (EasyPeasyFinance)",
+      by: "EasyPeasyFinance",
+    },
+    { id: "9CchpWy29es", title: "What Are Stocks? (PragerU)", by: "PragerU" },
+    {
+      id: "2fLd4VQHKNg",
+      title: "What is the Stock Market?",
+      by: "Super Simple",
+    },
+  ];
 
   return (
     <Wrapper>
@@ -794,6 +972,60 @@ export default function KidsGameView() {
         <Title>Kids Stock Adventure ✨</Title>
       </Header>
       <Area>
+        {difficulty === null && (
+          <CarouselContainer>
+            <CarouselHeader>
+              <CarouselTitle aria-label="Intro Videos Carousel">
+                🎬 Learn First
+              </CarouselTitle>
+              <NavBtns>
+                <NavBtn
+                  onClick={prevVideo}
+                  aria-label="Previous video"
+                  disabled={introVideos.length <= 1}
+                >
+                  ◀
+                </NavBtn>
+                <NavBtn
+                  onClick={nextVideo}
+                  aria-label="Next video"
+                  disabled={introVideos.length <= 1}
+                >
+                  ▶
+                </NavBtn>
+              </NavBtns>
+            </CarouselHeader>
+            <VideoWrap
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${introVideos[vidIdx].title} (${vidIdx + 1} of ${introVideos.length})`}
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
+            >
+              <iframe
+                key={introVideos[vidIdx].id}
+                src={`https://www.youtube.com/embed/${introVideos[vidIdx].id}`}
+                title={introVideos[vidIdx].title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </VideoWrap>
+            <VideoMeta>
+              {introVideos[vidIdx].title} • {introVideos[vidIdx].by}
+            </VideoMeta>
+            <Dots role="tablist" aria-label="Video selection">
+              {introVideos.map((v, i) => (
+                <DotBtn
+                  key={v.id}
+                  aria-label={`Go to video ${i + 1}: ${v.title}`}
+                  aria-selected={vidIdx === i}
+                  $active={vidIdx === i}
+                  onClick={() => goVideo(i)}
+                />
+              ))}
+            </Dots>
+          </CarouselContainer>
+        )}
         {/* Progress / Score for quiz modes only */}
         {!done && !inLearn && difficulty && (
           <>
@@ -814,13 +1046,31 @@ export default function KidsGameView() {
                 {coins} 💰
               </StatBox>
             </ScoreRow>
+            <InlineNav>
+              <KidsHomeBtn
+                onClick={changeLevel}
+                aria-label="Return to kids home (mode selection)"
+              >
+                🏡 Kids Home
+              </KidsHomeBtn>
+            </InlineNav>
           </>
         )}
         {/* Learn mode progress */}
         {!done && inLearn && (
-          <Progress aria-label="progress">
-            <ProgressFill $w={(learnIdx / total) * 100} />
-          </Progress>
+          <>
+            <Progress aria-label="progress">
+              <ProgressFill $w={(learnIdx / total) * 100} />
+            </Progress>
+            <InlineNav>
+              <KidsHomeBtn
+                onClick={changeLevel}
+                aria-label="Return to kids home (mode selection)"
+              >
+                🏡 Kids Home
+              </KidsHomeBtn>
+            </InlineNav>
+          </>
         )}
 
         {/* Mode selection */}
@@ -832,6 +1082,13 @@ export default function KidsGameView() {
             </p>
             <Choices style={{ justifyContent: "center", marginTop: 16 }}>
               <ChoiceBtn
+                onClick={() => setDifficulty("learn")}
+                style={{ minWidth: 140 }}
+                $color="linear-gradient(135deg,#b2e5ff,#58a6ff)"
+              >
+                📘 Learn
+              </ChoiceBtn>
+              <ChoiceBtn
                 onClick={() => setDifficulty("basic")}
                 style={{ minWidth: 140 }}
               >
@@ -842,13 +1099,6 @@ export default function KidsGameView() {
                 style={{ minWidth: 140 }}
               >
                 🎓 Advanced Quiz
-              </ChoiceBtn>
-              <ChoiceBtn
-                onClick={() => setDifficulty("learn")}
-                style={{ minWidth: 140 }}
-                $color="linear-gradient(135deg,#b2e5ff,#58a6ff)"
-              >
-                📘 Learn
               </ChoiceBtn>
             </Choices>
           </Card>
