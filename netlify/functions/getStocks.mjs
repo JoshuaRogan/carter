@@ -44,7 +44,7 @@ function json(body, { status = 200, headers = {} } = {}) {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       // 4 hour caching for CDN/browser; adjust if fresher data needed
-      'Cache-Control': 'public, max-age=14400, s-maxage=14400, immutable',
+      'Cache-Control': 'public, max-age=14400, s-maxage=14400',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',

@@ -1,5 +1,3 @@
-const API_KEY = "buc51vv48v6oa2u4gkpg";
-
 // Simple in-memory cache: ticker -> { value: number|false, ts: number }
 const _stockCache = new Map();
 // Track in-flight fetch promises per ticker to dedupe concurrent requests
@@ -40,7 +38,8 @@ export async function getStockData(ticker, options = {}) {
     const inFlight = _inflight.get(ticker);
     if (inFlight) return inFlight; // return same promise to callers
   }
-  const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${API_KEY}`;
+  // const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${API_KEY}`;
+  const url = `https://stocks.joshuarogan.com/.netlify/functions/getStocks?ticker=${ticker}`;
   const fetchPromise = (async () => {
     let value = false;
     try {
@@ -48,7 +47,9 @@ export async function getStockData(ticker, options = {}) {
       if (res.ok) {
         const data = await res.json();
         const current =
-          typeof data?.c === "number" ? data.c : parseFloat(data?.c);
+          typeof data?.price === "number"
+            ? data.price
+            : parseFloat(data?.price);
         value = isNaN(current) ? false : current;
       } else {
         // Non-OK (e.g., 4xx) -> negative cache to avoid tight retry loops
