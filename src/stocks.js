@@ -10,6 +10,10 @@ import { getStockData } from "./stockApi";
 
 async function addPriceToStocks(stock) {
   stock.current = await getStockData(stock.ticker);
+  if (!stock.current || isNaN(stock.current)) {
+    // Fallback to average cost if live price not available
+    stock.current = parseFloat(stock.averageCost);
+  }
   return stock;
 }
 
@@ -47,6 +51,13 @@ export async function getGrantStocks() {
 
 export async function getAndrewStocks() {
   return getStocks(andrewStocks);
+}
+
+// Generic utility to enrich any provided stocks JSON array with current prices
+export async function enrichStocks(rawStocks) {
+  // clone to avoid mutating original imported JSON arrays
+  const cloned = rawStocks.map(s => ({ ...s }));
+  return getStocks(cloned);
 }
 
 export function sumStocks(stocks) {

@@ -66,6 +66,61 @@ const LotsDiv = styled.div`
   font-size: 0.75em;
 `;
 
+// New styles for condensed card layout
+const CardsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+`;
+
+const TickerCard = styled.div`
+  background: #ffffff12;
+  border: 1px solid #ffffff25;
+  backdrop-filter: blur(4px);
+  padding: 14px 14px 16px;
+  border-radius: 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.78rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s, background 0.4s;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 22px -8px #000a;
+    background: #ffffff18;
+  }
+`;
+
+const TickerBadge = styled.div`
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 4px;
+`;
+
+const PriceLine = styled.div`
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ChangeLine = styled.div`
+  font-size: 0.7rem;
+  margin-top: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
 function Icon({ isNegative }) {
   if (isNegative) {
     return <ImArrowDown size=".8em" color="#e74c3c" />;
@@ -74,7 +129,7 @@ function Icon({ isNegative }) {
   return <ImArrowUp size=".8em" color="#2ecc71" />;
 }
 
-function Ticker({ current, shares, averageCost, image, lots, ...rest }) {
+function Ticker({ current, shares, averageCost, image, lots, display, ticker, condensed, ...rest }) {
   const avgCost = parseFloat(averageCost);
   const difference = current - averageCost;
   const percentChange = (difference / avgCost) * 100;
@@ -91,6 +146,25 @@ function Ticker({ current, shares, averageCost, image, lots, ...rest }) {
     }
   }
   console.log(rest);
+
+  if (condensed) {
+    return (
+      <TickerCard>
+        <TickerBadge>{ticker}</TickerBadge>
+        <TickerImageContainer style={{ marginBottom: 6 }}>
+          <TickerImage src={image} style={{ width: '60%', maxWidth: 90 }} />
+        </TickerImageContainer>
+        <strong style={{ fontSize: '.8rem', textAlign: 'center' }}>{display}</strong>
+        <PriceLine>
+          <div>${currentValue}</div>
+          <div style={{ fontSize: '.6rem', opacity: .7 }}>{shares} sh @ ${current}</div>
+        </PriceLine>
+        <ChangeLine style={{ color: yourChangeIsNegative ? '#e74c3c' : '#2ecc71' }}>
+          <Icon isNegative={yourChangeIsNegative} /> {yourChangeIsNegative ? '-' : ''}${Math.abs(yourChange)}
+        </ChangeLine>
+      </TickerCard>
+    );
+  }
 
   return (
     <TickerContainer>
@@ -130,7 +204,7 @@ function Ticker({ current, shares, averageCost, image, lots, ...rest }) {
   );
 }
 
-export default function Tickers({ data, name }) {
+export default function Tickers({ data, name, condensed }) {
   const stocksSum = sumStocks(data);
   const investmentAmount = sumInvestmentAmount(data);
   const investmentDifference = stocksSum - investmentAmount;
@@ -139,6 +213,18 @@ export default function Tickers({ data, name }) {
 
   if (data.length === 0) {
     return "Loading...";
+  }
+
+  if (condensed) {
+    return (
+      <>
+        <CardsGrid>
+          {data.map((stock) => (
+            <Ticker key={stock.ticker} {...stock} condensed />
+          ))}
+        </CardsGrid>
+      </>
+    );
   }
 
   return (
@@ -152,7 +238,7 @@ export default function Tickers({ data, name }) {
 
       <TickerTableContainer>
         {data.map((stock) => {
-          return <Ticker {...stock}></Ticker>;
+          return <Ticker key={stock.ticker} {...stock}></Ticker>;
         })}
       </TickerTableContainer>
     </Container>
