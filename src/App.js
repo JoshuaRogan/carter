@@ -5,6 +5,7 @@ import { portfolios, getPortfolioById } from "./portfolios";
 import styled, { createGlobalStyle } from "styled-components";
 import PortfolioView from "./PortfolioView";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
+import GameView from "./GameView";
 
 const GlobalStyle = createGlobalStyle`
   body { 
@@ -236,6 +237,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/portfolio/:id" element={<PortfolioRoute />} />
+        <Route path="/portfolio/:id/game" element={<GameView />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </>

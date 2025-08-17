@@ -4,6 +4,7 @@ import { getPortfolioById } from "./portfolios";
 import { enrichStocks, sumStocks, sumInvestmentAmount } from "./stocks";
 import Tickers from "./Tickers";
 import { ImArrowLeft } from "react-icons/im";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -136,6 +137,33 @@ const ViewToggleBtn = styled.button`
   }
 `;
 
+const GameBtn = styled.button`
+  background: linear-gradient(145deg, #d8ffe2, #fff7d9 55%, #e3f4ff);
+  border: 2px solid #c2e9d2;
+  color: #20503a;
+  padding: 12px 18px;
+  border-radius: 16px;
+  font-size: 0.7rem;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  transition:
+    background 0.25s,
+    transform 0.25s;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+  &:hover {
+    background: linear-gradient(145deg, #c7ffd3, #fff1bb 55%, #daf0ff);
+    transform: translateY(-3px) rotate(1deg);
+  }
+  &:active {
+    transform: translateY(-1px);
+  }
+`;
+
 const Emoji = ({ label, symbol, fallback = "💰" }) => (
   <span
     role="img"
@@ -197,6 +225,7 @@ export default function PortfolioView({ id, onBack }) {
       return next;
     });
   };
+  const navigate = useNavigate();
 
   return (
     <Wrapper $color={portfolio.color}>
@@ -213,6 +242,13 @@ export default function PortfolioView({ id, onBack }) {
         >
           {condensed ? "Big View 🔍" : "Small View 🧩"}
         </ViewToggleBtn>
+        <GameBtn
+          type="button"
+          onClick={() => navigate(`/portfolio/${portfolio.id}/game`)}
+          title="Play a fun guessing game"
+        >
+          Play Game 🎮
+        </GameBtn>
       </HeaderBar>
 
       <MetricsStrip>
