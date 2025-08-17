@@ -7,6 +7,7 @@ import PortfolioView from "./PortfolioView";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 import GameView from "./GameView";
 import { enrichStocks, sumStocks, sumInvestmentAmount } from "./stocks";
+import KidsGameView from "./KidsGameView"; // NEW
 
 const GlobalStyle = createGlobalStyle`
   body { 
@@ -411,6 +412,43 @@ const WarningBanner = styled.div`
   font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
 `;
 
+// Fun top-of-home kids game button
+const KidsGameButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #ffcc33, #ff8a54, #b57bff);
+  background-size: 200% 100%;
+  animation: ${shimmer} 8s linear infinite;
+  color: #2b3742;
+  border: 0;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 14px 22px 16px;
+  border-radius: 26px;
+  cursor: pointer;
+  box-shadow:
+    0 10px 24px -12px rgba(40, 60, 90, 0.4),
+    0 0 0 3px #ffffffaa;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+  letter-spacing: 0.6px;
+  margin: 20px auto 6px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.35s,
+    box-shadow 0.35s;
+  &:hover {
+    transform: translateY(-4px) rotate(-1.5deg);
+    box-shadow:
+      0 14px 30px -10px rgba(40, 60, 90, 0.5),
+      0 0 0 3px #ffffffcc;
+  }
+  &:active {
+    transform: translateY(-1px) rotate(-1deg);
+  }
+`;
+
 function Home() {
   const navigate = useNavigate();
   // Memoize portfolios list to provide a stable reference for effect deps
@@ -539,8 +577,23 @@ function Home() {
   const totalRanked = sortedIds.length;
   return (
     <PageWrapper>
+      {/* Moved KidsGameButton below heading/subheading per request */}
       <Heading>Our Family Stocks</Heading>
       <SubHeading>Tap a card to peek at how they are doing!</SubHeading>
+      <div style={{ textAlign: "center", margin: "0 0 34px" }}>
+        <KidsGameButton
+          onClick={() => navigate("/kids")}
+          aria-label="Open the kids learning game about stocks"
+        >
+          <span role="img" aria-hidden>
+            🎮
+          </span>
+          &nbsp;Kids Stock Adventure&nbsp;
+          <span role="img" aria-hidden>
+            ✨
+          </span>
+        </KidsGameButton>
+      </div>
       {priceWarning && (
         <WarningBanner role="alert" aria-live="polite">
           <span
@@ -662,75 +715,8 @@ function Home() {
           </CardsGrid>
         </Section>
       ))}
-      {(topStocks.length > 0 || worstStocks.length > 0) &&
-        (topStocks.length > 0 && worstStocks.length > 0 ? (
-          <LeaderboardsRow>
-            <LeaderboardSection aria-label="Top performing stocks overall">
-              <LeaderboardTitle>Top Stocks 🏆</LeaderboardTitle>
-              <LeaderboardList>
-                {topStocks.map((s) => {
-                  const neg = s.pct < 0;
-                  return (
-                    <LeaderboardItem
-                      key={s.key}
-                      aria-label={`Rank ${s.rank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
-                    >
-                      <LBRank $rank={s.rank}>
-                        <span style={{ fontSize: "1.05rem" }}>
-                          {s.rank === 1
-                            ? "🥇"
-                            : s.rank === 2
-                              ? "🥈"
-                              : s.rank === 3
-                                ? "🥉"
-                                : "🏅"}
-                        </span>
-                        <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
-                          {ordinal(s.rank)}
-                        </span>
-                      </LBRank>
-                      <LBTicker>{s.ticker}</LBTicker>
-                      <LBNameWrap>
-                        <LBPrimary>{s.display}</LBPrimary>
-                        <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
-                      </LBNameWrap>
-                      <LBGain $neg={neg}>
-                        {neg ? "-" : "+"}
-                        {Math.abs(s.pct).toFixed(2)}%
-                      </LBGain>
-                    </LeaderboardItem>
-                  );
-                })}
-              </LeaderboardList>
-            </LeaderboardSection>
-            <LeaderboardSection aria-label="Worst performing stocks overall">
-              <WorstLeaderboardTitle style={{ marginTop: 0 }}>
-                Lowest Stocks 🔻
-              </WorstLeaderboardTitle>
-              <WorstLeaderboardList>
-                {worstStocks.map((s) => (
-                  <WorstLeaderboardItem
-                    key={s.key}
-                    aria-label={`Worst rank ${s.wRank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
-                  >
-                    <WRank $rank={s.wRank}>
-                      <span style={{ fontSize: "1.05rem" }}>🔻</span>
-                      <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
-                        {ordinal(s.wRank)}
-                      </span>
-                    </WRank>
-                    <LBTicker>{s.ticker}</LBTicker>
-                    <LBNameWrap>
-                      <LBPrimary>{s.display}</LBPrimary>
-                      <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
-                    </LBNameWrap>
-                    <WGain>-{Math.abs(s.pct).toFixed(2)}%</WGain>
-                  </WorstLeaderboardItem>
-                ))}
-              </WorstLeaderboardList>
-            </LeaderboardSection>
-          </LeaderboardsRow>
-        ) : topStocks.length > 0 ? (
+      {topStocks.length > 0 && worstStocks.length > 0 ? (
+        <LeaderboardsRow>
           <LeaderboardSection aria-label="Top performing stocks overall">
             <LeaderboardTitle>Top Stocks 🏆</LeaderboardTitle>
             <LeaderboardList>
@@ -769,9 +755,10 @@ function Home() {
               })}
             </LeaderboardList>
           </LeaderboardSection>
-        ) : (
           <LeaderboardSection aria-label="Worst performing stocks overall">
-            <WorstLeaderboardTitle>Lowest Stocks 🔻</WorstLeaderboardTitle>
+            <WorstLeaderboardTitle style={{ marginTop: 0 }}>
+              Lowest Stocks 🔻
+            </WorstLeaderboardTitle>
             <WorstLeaderboardList>
               {worstStocks.map((s) => (
                 <WorstLeaderboardItem
@@ -794,7 +781,72 @@ function Home() {
               ))}
             </WorstLeaderboardList>
           </LeaderboardSection>
-        ))}
+        </LeaderboardsRow>
+      ) : topStocks.length > 0 ? (
+        <LeaderboardSection aria-label="Top performing stocks overall">
+          <LeaderboardTitle>Top Stocks 🏆</LeaderboardTitle>
+          <LeaderboardList>
+            {topStocks.map((s) => {
+              const neg = s.pct < 0;
+              return (
+                <LeaderboardItem
+                  key={s.key}
+                  aria-label={`Rank ${s.rank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
+                >
+                  <LBRank $rank={s.rank}>
+                    <span style={{ fontSize: "1.05rem" }}>
+                      {s.rank === 1
+                        ? "🥇"
+                        : s.rank === 2
+                          ? "🥈"
+                          : s.rank === 3
+                            ? "🥉"
+                            : "🏅"}
+                    </span>
+                    <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
+                      {ordinal(s.rank)}
+                    </span>
+                  </LBRank>
+                  <LBTicker>{s.ticker}</LBTicker>
+                  <LBNameWrap>
+                    <LBPrimary>{s.display}</LBPrimary>
+                    <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
+                  </LBNameWrap>
+                  <LBGain $neg={neg}>
+                    {neg ? "-" : "+"}
+                    {Math.abs(s.pct).toFixed(2)}%
+                  </LBGain>
+                </LeaderboardItem>
+              );
+            })}
+          </LeaderboardList>
+        </LeaderboardSection>
+      ) : (
+        <LeaderboardSection aria-label="Worst performing stocks overall">
+          <WorstLeaderboardTitle>Lowest Stocks 🔻</WorstLeaderboardTitle>
+          <WorstLeaderboardList>
+            {worstStocks.map((s) => (
+              <WorstLeaderboardItem
+                key={s.key}
+                aria-label={`Worst rank ${s.wRank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
+              >
+                <WRank $rank={s.wRank}>
+                  <span style={{ fontSize: "1.05rem" }}>🔻</span>
+                  <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
+                    {ordinal(s.wRank)}
+                  </span>
+                </WRank>
+                <LBTicker>{s.ticker}</LBTicker>
+                <LBNameWrap>
+                  <LBPrimary>{s.display}</LBPrimary>
+                  <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
+                </LBNameWrap>
+                <WGain>-{Math.abs(s.pct).toFixed(2)}%</WGain>
+              </WorstLeaderboardItem>
+            ))}
+          </WorstLeaderboardList>
+        </LeaderboardSection>
+      )}
       <div style={{ display: "none" }}>learn react</div>
     </PageWrapper>
   );
@@ -838,6 +890,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/portfolio/:id" element={<PortfolioRoute />} />
         <Route path="/portfolio/:id/game" element={<GameView />} />
+        <Route path="/kids" element={<KidsGameView />} /> {/* NEW kids route */}
         <Route path="*" element={<Home />} />
       </Routes>
     </>
