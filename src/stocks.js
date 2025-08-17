@@ -56,7 +56,7 @@ export async function getAndrewStocks() {
 // Generic utility to enrich any provided stocks JSON array with current prices
 export async function enrichStocks(rawStocks) {
   // clone to avoid mutating original imported JSON arrays
-  const cloned = rawStocks.map(s => ({ ...s }));
+  const cloned = rawStocks.map((s) => ({ ...s }));
   return getStocks(cloned);
 }
 

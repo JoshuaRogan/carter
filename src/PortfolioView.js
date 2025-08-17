@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { getPortfolioById } from './portfolios';
-import { enrichStocks, sumStocks, sumInvestmentAmount } from './stocks';
-import Back from './Back';
-import Tickers from './Tickers';
-import { ImArrowLeft } from 'react-icons/im';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { getPortfolioById } from "./portfolios";
+import { enrichStocks, sumStocks, sumInvestmentAmount } from "./stocks";
+import Back from "./Back";
+import Tickers from "./Tickers";
+import { ImArrowLeft } from "react-icons/im";
 
 const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: ${(p)=>`linear-gradient(135deg, ${p.$color} 0%, #0f1824 70%)`};
+  background: ${(p) => `linear-gradient(135deg, ${p.$color} 0%, #0f1824 70%)`};
   position: relative;
 `;
 
@@ -28,14 +28,21 @@ const HeaderBar = styled.header`
 const BackBtn = styled.button`
   background: #ffffff20;
   border: 1px solid #ffffff35;
-  width: 42px; height: 42px;
-  display: grid; place-items: center;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
   border-radius: 12px;
   cursor: pointer;
   color: #fff;
-  transition: background .25s, transform .25s;
-  &:hover { background:#ffffff35; transform: translateY(-2px); }
-  &:active { transform: translateY(0); }
+  transition: background 0.25s, transform 0.25s;
+  &:hover {
+    background: #ffffff35;
+    transform: translateY(-2px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
 `;
 
 const Title = styled.h1`
@@ -63,10 +70,10 @@ const MetricCard = styled.div`
 `;
 
 const MetricLabel = styled.div`
-  font-size: .65rem;
+  font-size: 0.65rem;
   letter-spacing: 1px;
   text-transform: uppercase;
-  opacity: .75;
+  opacity: 0.75;
 `;
 
 const MetricValue = styled.div`
@@ -81,7 +88,10 @@ const Content = styled.div`
 `;
 
 const Loading = styled.div`
-  padding: 60px 30px; text-align:center; font-size:1.1rem; opacity:.85;
+  padding: 60px 30px;
+  text-align: center;
+  font-size: 1.1rem;
+  opacity: 0.85;
 `;
 
 export default function PortfolioView({ id, onBack }) {
@@ -89,9 +99,9 @@ export default function PortfolioView({ id, onBack }) {
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{
+  useEffect(() => {
     let active = true;
-    (async ()=>{
+    (async () => {
       setLoading(true);
       try {
         const enriched = await enrichStocks(portfolio.data);
@@ -100,7 +110,9 @@ export default function PortfolioView({ id, onBack }) {
         if (active) setLoading(false);
       }
     })();
-    return ()=>{ active = false; };
+    return () => {
+      active = false;
+    };
   }, [id, portfolio.data]);
 
   const total = stocks.length ? sumStocks(stocks) : 0;
@@ -112,7 +124,9 @@ export default function PortfolioView({ id, onBack }) {
   return (
     <Wrapper $color={portfolio.color}>
       <HeaderBar>
-        <BackBtn aria-label="Back" onClick={onBack}><ImArrowLeft /></BackBtn>
+        <BackBtn aria-label="Back" onClick={onBack}>
+          <ImArrowLeft />
+        </BackBtn>
         <Title>{portfolio.name}'s Portfolio</Title>
       </HeaderBar>
 
@@ -127,22 +141,26 @@ export default function PortfolioView({ id, onBack }) {
         </MetricCard>
         <MetricCard>
           <MetricLabel>Change</MetricLabel>
-          <MetricValue style={{color: negative ? '#e74c3c' : '#2ecc71'}}>
-            {negative?'-':''}${Math.abs(delta).toFixed(2)}
+          <MetricValue style={{ color: negative ? "#e74c3c" : "#2ecc71" }}>
+            {negative ? "-" : ""}${Math.abs(delta).toFixed(2)}
           </MetricValue>
         </MetricCard>
         <MetricCard>
           <MetricLabel>Change %</MetricLabel>
-          <MetricValue style={{color: negative ? '#e74c3c' : '#2ecc71'}}>
-            {negative?'-':''}{Math.abs(pct).toFixed(2)}%
+          <MetricValue style={{ color: negative ? "#e74c3c" : "#2ecc71" }}>
+            {negative ? "-" : ""}
+            {Math.abs(pct).toFixed(2)}%
           </MetricValue>
         </MetricCard>
       </MetricsStrip>
 
       <Content>
-        {loading ? <Loading>Loading live prices…</Loading> : <Tickers data={stocks} name={portfolio.name} condensed />}
+        {loading ? (
+          <Loading>Loading live prices…</Loading>
+        ) : (
+          <Tickers data={stocks} name={portfolio.name} condensed />
+        )}
       </Content>
     </Wrapper>
   );
 }
-

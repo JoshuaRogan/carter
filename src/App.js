@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import "./App.css";
 import { FAMILIES, getSiteFamily } from "./env";
-import { portfolios } from './portfolios';
-import styled, { createGlobalStyle } from 'styled-components';
-import PortfolioView from './PortfolioView';
+import { portfolios, getPortfolioById } from "./portfolios";
+import styled, { createGlobalStyle } from "styled-components";
+import PortfolioView from "./PortfolioView";
+import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
   body { 
@@ -28,26 +29,28 @@ const Section = styled.section`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: clamp(1.4rem,3vw,2.1rem);
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
   margin: 0 0 20px;
-  background: linear-gradient(90deg,#ffffff,#bdc3c7);
+  background: linear-gradient(90deg, #ffffff, #bdc3c7);
   -webkit-background-clip: text;
   color: transparent;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
   position: relative;
   &:after {
     content: "";
     position: absolute;
-    left: 0; bottom: -6px;
-    height: 3px; width: 80px;
-    background: linear-gradient(90deg,#f39c12,#e74c3c,#9b59b6);
+    left: 0;
+    bottom: -6px;
+    height: 3px;
+    width: 80px;
+    background: linear-gradient(90deg, #f39c12, #e74c3c, #9b59b6);
     border-radius: 2px;
   }
 `;
 
 const CardsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 24px;
 `;
 
@@ -61,10 +64,10 @@ const Card = styled.button`
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: transform .25s, box-shadow .25s, background .4s;
+  transition: transform 0.25s, box-shadow 0.25s, background 0.4s;
   color: #ecf0f1;
   font-weight: 600;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -73,19 +76,32 @@ const Card = styled.button`
     content: "";
     position: absolute;
     inset: 0;
-    background: ${(p)=>p.$color}22;
-    opacity: .7;
+    background: ${(p) => p.$color}22;
+    opacity: 0.7;
   }
   &:after {
     content: "";
     position: absolute;
-    top: -40%; left: -40%;
-    width: 180%; height: 180%;
-    background: radial-gradient(circle at 30% 30%, ${(p)=>p.$color}55, transparent 70%);
-    opacity: 0; transition: opacity .45s;
+    top: -40%;
+    left: -40%;
+    width: 180%;
+    height: 180%;
+    background: radial-gradient(
+      circle at 30% 30%,
+      ${(p) => p.$color}55,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.45s;
   }
-  &:hover { transform: translateY(-4px); box-shadow: 0 10px 28px -6px rgba(0,0,0,.4); background: #ffffff18; }
-  &:hover:after { opacity: 1; }
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.4);
+    background: #ffffff18;
+  }
+  &:hover:after {
+    opacity: 1;
+  }
   border: none;
 `;
 
@@ -94,10 +110,10 @@ const CardTitle = styled.div`
 `;
 
 const FamBadge = styled.span`
-  font-size: .65rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  background: ${(p)=>p.$color};
+  background: ${(p) => p.$color};
   color: #fff;
   padding: 3px 8px;
   border-radius: 12px;
@@ -109,7 +125,7 @@ const Heading = styled.h1`
   text-align: center;
   margin: 32px 0 8px;
   font-size: clamp(1.8rem, 4vw, 3rem);
-  background: linear-gradient(90deg,#f39c12,#e74c3c,#9b59b6);
+  background: linear-gradient(90deg, #f39c12, #e74c3c, #9b59b6);
   -webkit-background-clip: text;
   color: transparent;
 `;
@@ -119,65 +135,102 @@ const SubHeading = styled.p`
   font-weight: 400;
   margin: 0 0 42px;
   font-size: 1rem;
-  opacity: .8;
+  opacity: 0.8;
 `;
 
 function niceFamilyName(fam) {
-  if (!fam) return '';
+  if (!fam) return "";
   return fam.charAt(0).toUpperCase() + fam.slice(1);
 }
 
-function App() {
-  const [selected, setSelected] = useState(null);
+function Home() {
+  const navigate = useNavigate();
   const envSiteName = getSiteFamily();
-
-  if (selected) {
-    return (
-      <>
-        <GlobalStyle />
-        <PortfolioView id={selected} onBack={()=>setSelected(null)} />
-      </>
-    );
-  }
-
-  const visiblePortfolios = portfolios.filter(p => envSiteName === FAMILIES.LOCAL || p.family === envSiteName);
-
-  // Group by family
+  const visiblePortfolios = portfolios.filter(
+    (p) => envSiteName === FAMILIES.LOCAL || p.family === envSiteName
+  );
   const grouped = visiblePortfolios.reduce((acc, p) => {
     (acc[p.family] ||= []).push(p);
     return acc;
   }, {});
-
-  // Desired family order (only those present will render)
-  const orderedFamilies = [FAMILIES.ROGAN, FAMILIES.NOLE, FAMILIES.KERRIGAN, FAMILIES.TOKASH, FAMILIES.ROGAN_DIR].filter(f => grouped[f]);
-
+  const orderedFamilies = [
+    FAMILIES.NOLE,
+    FAMILIES.ROGAN,
+    FAMILIES.KERRIGAN,
+    FAMILIES.TOKASH,
+    FAMILIES.ROGAN_DIR,
+  ].filter((f) => grouped[f]);
   return (
-    <>
-      <GlobalStyle />
-      <PageWrapper>
-        <Heading>Family Stock Portfolios</Heading>
-        <SubHeading>Tap a card to view a live snapshot</SubHeading>
-        {orderedFamilies.map(fam => (
-          <Section key={fam} aria-label={`${niceFamilyName(fam)} family section`}>
-            {orderedFamilies.length > 1 && (
-              <SectionTitle>{niceFamilyName(fam)} Family</SectionTitle>
-            )}
-            <CardsGrid>
-              {grouped[fam].map(p => (
-                <Card key={p.id} $color={p.color} onClick={()=>setSelected(p.id)} aria-label={`${p.name}'s portfolio`}>
-                  <FamBadge $color={p.color}>{p.family}</FamBadge>
-                  <CardTitle>{p.name}'s Portfolio</CardTitle>
-                  <div style={{fontSize:'.75rem',opacity:.7}}>Stock holdings & performance</div>
-                </Card>
-              ))}
-            </CardsGrid>
-          </Section>
-        ))}
-        {/* hidden text to satisfy legacy test if still present */}
-        <div style={{display:'none'}}>learn react</div>
-      </PageWrapper>
-    </>
+    <PageWrapper>
+      <Heading>Family Stock Portfolios</Heading>
+      <SubHeading>Tap a card to view a live snapshot</SubHeading>
+      {orderedFamilies.map((fam) => (
+        <Section key={fam} aria-label={`${niceFamilyName(fam)} family section`}>
+          {orderedFamilies.length > 1 && (
+            <SectionTitle>{niceFamilyName(fam)} Family</SectionTitle>
+          )}
+          <CardsGrid>
+            {grouped[fam].map((p) => (
+              <Card
+                key={p.id}
+                $color={p.color}
+                onClick={() => navigate(`/portfolio/${p.id}`)}
+                aria-label={`${p.name}'s portfolio`}
+              >
+                <FamBadge $color={p.color}>{p.family}</FamBadge>
+                <CardTitle>{p.name}'s Portfolio</CardTitle>
+                <div style={{ fontSize: ".75rem", opacity: 0.7 }}>
+                  Stock holdings & performance
+                </div>
+              </Card>
+            ))}
+          </CardsGrid>
+        </Section>
+      ))}
+      <div style={{ display: "none" }}>learn react</div>
+    </PageWrapper>
   );
 }
 
-export default App;
+function PortfolioRoute() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const portfolio = getPortfolioById(id);
+  if (!portfolio) {
+    return (
+      <PageWrapper>
+        <Heading>Not Found</Heading>
+        <SubHeading>Portfolio with id '{id}' does not exist.</SubHeading>
+        <div style={{ textAlign: "center" }}>
+          <button
+            onClick={() => navigate("/")}
+            style={{
+              padding: "10px 18px",
+              borderRadius: 12,
+              border: "1px solid #ffffff33",
+              background: "#ffffff18",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Go Home
+          </button>
+        </div>
+      </PageWrapper>
+    );
+  }
+  return <PortfolioView id={id} onBack={() => navigate("/")} />;
+}
+
+export default function App() {
+  return (
+    <>
+      <GlobalStyle />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/portfolio/:id" element={<PortfolioRoute />} />
+        <Route path="*" element={<Home />} />
+      </Routes>
+    </>
+  );
+}

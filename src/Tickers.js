@@ -136,7 +136,17 @@ function Icon({ isNegative }) {
   return <ImArrowUp size=".8em" color="#2ecc71" />;
 }
 
-function Ticker({ current, shares, averageCost, image, lots, display, ticker, condensed, ...rest }) {
+function Ticker({
+  current,
+  shares,
+  averageCost,
+  image,
+  lots,
+  display,
+  ticker,
+  condensed,
+  ...rest
+}) {
   const avgCost = parseFloat(averageCost);
   const difference = current - averageCost;
   const percentChange = (difference / avgCost) * 100;
@@ -159,17 +169,26 @@ function Ticker({ current, shares, averageCost, image, lots, display, ticker, co
       <TickerCard>
         <TickerBadge>{ticker}</TickerBadge>
         <TickerImageContainer style={{ marginBottom: 12 }}>
-          <TickerImage src={image} style={{ width: '72%', maxWidth: 130 }} />
+          <TickerImage src={image} style={{ width: "72%", maxWidth: 130 }} />
         </TickerImageContainer>
-        <strong style={{ fontSize: '1.05rem', textAlign: 'center', lineHeight: 1.2 }}>
+        <strong
+          style={{ fontSize: "1.05rem", textAlign: "center", lineHeight: 1.2 }}
+        >
           {display}
         </strong>
         <PriceLine>
-          <div style={{ fontWeight: 700, fontSize: '1.15rem' }}>${currentValue}</div>
-          <div style={{ fontSize: '.78rem', opacity: .7 }}>{shares} sh @ ${current}</div>
+          <div style={{ fontWeight: 700, fontSize: "1.15rem" }}>
+            ${currentValue}
+          </div>
+          <div style={{ fontSize: ".78rem", opacity: 0.7 }}>
+            {shares} sh @ ${current}
+          </div>
         </PriceLine>
-        <ChangeLine style={{ color: yourChangeIsNegative ? '#e74c3c' : '#2ecc71' }}>
-          <Icon isNegative={yourChangeIsNegative} /> {yourChangeIsNegative ? '-' : ''}${Math.abs(yourChange)}
+        <ChangeLine
+          style={{ color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71" }}
+        >
+          <Icon isNegative={yourChangeIsNegative} />{" "}
+          {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)}
         </ChangeLine>
       </TickerCard>
     );
