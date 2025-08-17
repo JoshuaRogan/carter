@@ -338,7 +338,7 @@ export default function GameView() {
               </div>
               <div>
                 <Tiny>COINS</Tiny>
-                <br /> {coins} 🪙
+                <br /> {coins} 👛
               </div>
             </ScoreBar>
             <Card aria-live="polite">
