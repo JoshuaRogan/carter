@@ -34,6 +34,7 @@ const TickerContainer = styled.div`
   color: #fff;
   max-width: 760px;
   width: 100%;
+  box-sizing: border-box; /* ensure padding doesn't cause overflow */
   box-shadow: 0 8px 26px -10px #000c;
   position: relative;
   overflow: hidden;
@@ -41,6 +42,7 @@ const TickerContainer = styled.div`
     background 0.35s,
     box-shadow 0.3s,
     transform 0.3s;
+  overscroll-behavior: contain;
   &:before {
     content: "";
     position: absolute;
@@ -55,10 +57,14 @@ const TickerContainer = styled.div`
     box-shadow: 0 14px 40px -12px #000d;
     transform: translateY(-4px);
   }
+  @media (max-width: 840px) {
+    max-width: calc(100vw - 48px); /* side gutters */
+  }
   @media (max-width: 640px) {
-    padding: 18px 18px 22px;
+    padding: 18px 16px 22px;
     border-radius: 18px;
     margin-top: 18px;
+    max-width: calc(100vw - 24px); /* narrower gutters */
   }
 `;
 
@@ -98,10 +104,16 @@ const TickerCard = styled.div`
     transform 0.25s,
     box-shadow 0.25s,
     background 0.4s;
+  box-sizing: border-box; /* prevent internal padding overflow */
+  max-width: 100%;
   &:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 34px -12px #000d;
     background: #ffffff28;
+  }
+  @media (max-width: 640px) {
+    padding: 18px 18px 22px;
+    border-radius: 18px;
   }
 `;
 
@@ -114,12 +126,16 @@ const TickerBadge = styled.div`
   background: #ffffff22;
   padding: 4px 10px 5px;
   border-radius: 14px;
-  align-self: flex-start;
+  align-self: center; /* center horizontally in card */
   margin-bottom: 6px;
   backdrop-filter: blur(4px);
   box-shadow:
     0 1px 2px -1px #0008 inset,
     0 0 0 1px #ffffff1f;
+  display: inline-flex; /* ensure vertical centering */
+  align-items: center; /* vertical centering */
+  justify-content: center; /* horizontal centering for dynamic width */
+  line-height: 1; /* tighter vertical alignment */
 `;
 
 // New alignment helpers
