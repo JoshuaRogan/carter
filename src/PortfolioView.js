@@ -4,7 +4,7 @@ import { getPortfolioById } from "./portfolios";
 import { enrichStocks, sumStocks, sumInvestmentAmount } from "./stocks";
 import Tickers from "./Tickers";
 import { ImArrowLeft } from "react-icons/im";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -52,6 +52,39 @@ const Title = styled.h1`
   font-size: clamp(1.2rem, 3vw, 1.9rem);
   margin: 0;
 `;
+
+const RankBadge = styled.span`
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: ${(p) => {
+    if (p.$rank === 1) return "linear-gradient(145deg,#ffe27a,#ffcc33)";
+    if (p.$rank === 2) return "linear-gradient(145deg,#e0e5ec,#c9d0d7)";
+    if (p.$rank === 3) return "linear-gradient(145deg,#f6c39b,#e19152)";
+    return "linear-gradient(145deg,#d4e8f5,#b7d2e5)";
+  }};
+  color: #2b3742;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 8px 10px 8px;
+  border-radius: 18px;
+  letter-spacing: 0.8px;
+  box-shadow:
+    0 4px 10px -4px rgba(0, 0, 0, 0.28),
+    0 0 0 2px #ffffffaa;
+  text-transform: uppercase;
+  line-height: 1;
+  min-width: 54px;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+`;
+
+function ordinal(n) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
 
 const MetricsStrip = styled.div`
   display: flex;
@@ -181,6 +214,9 @@ const Emoji = ({ label, symbol, fallback = "💰" }) => (
 
 export default function PortfolioView({ id, onBack }) {
   const portfolio = getPortfolioById(id);
+  const location = useLocation();
+  const rank = location?.state?.rank;
+  const totalRank = location?.state?.totalRank;
   const [stocks, setStocks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [condensed, setCondensed] = useState(true); // toggle between compact and detailed
@@ -233,7 +269,26 @@ export default function PortfolioView({ id, onBack }) {
         <BackBtn aria-label="Back" onClick={onBack}>
           <ImArrowLeft />
         </BackBtn>
-        <Title>{portfolio.name}'s Portfolio</Title>
+        <Title style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {portfolio.name}'s Portfolio
+          {rank && (
+            <RankBadge
+              $rank={rank}
+              aria-label={`Rank ${rank} of ${totalRank || ""}`}
+            >
+              <span style={{ fontSize: "0.9rem" }} role="img" aria-hidden>
+                {rank === 1
+                  ? "🥇"
+                  : rank === 2
+                    ? "🥈"
+                    : rank === 3
+                      ? "🥉"
+                      : "🏅"}
+              </span>
+              {ordinal(rank)}
+            </RankBadge>
+          )}
+        </Title>
         <ViewToggleBtn
           type="button"
           aria-pressed={condensed}

@@ -2,6 +2,53 @@ import React from "react";
 import styled from "styled-components";
 import { ImArrowUp, ImArrowDown } from "react-icons/im";
 
+// Rank badge (reuse style concept from App.js)
+const RankBadge = styled.div`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: ${(p) => {
+    if (p.$rank === 1) return "linear-gradient(145deg,#ffe27a,#ffcc33)";
+    if (p.$rank === 2) return "linear-gradient(145deg,#e0e5ec,#c9d0d7)";
+    if (p.$rank === 3) return "linear-gradient(145deg,#f6c39b,#e19152)";
+    return "linear-gradient(145deg,#d4e8f5,#b7d2e5)";
+  }};
+  color: #2b3742;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 8px 8px 6px;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 5px 12px -6px rgba(20, 38, 60, 0.35),
+    0 0 0 3px #ffffffcc;
+  text-shadow: 0 1px 1px #ffffff;
+  pointer-events: none;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+  transform: rotate(-6deg);
+  z-index: 2;
+  .medalEmoji {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+  .rankNum {
+    font-size: 0.65rem;
+    line-height: 1;
+    margin-top: 1px;
+  }
+`;
+
+function ordinal(n) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -438,6 +485,8 @@ function Ticker({
   condensed,
   onSelectTicker,
   highlight,
+  rank, // new
+  totalRanked, // new
 }) {
   const avgCost = parseFloat(averageCost);
   const difference = current - avgCost; // use parsed value
@@ -461,6 +510,17 @@ function Ticker({
     }
   }
 
+  const medal =
+    rank === 1
+      ? "🥇"
+      : rank === 2
+        ? "🥈"
+        : rank === 3
+          ? "🥉"
+          : rank
+            ? "🏅"
+            : "";
+
   if (condensed) {
     return (
       <TickerCard
@@ -473,8 +533,19 @@ function Ticker({
             onSelectTicker && onSelectTicker(ticker);
           }
         }}
-        aria-label={`View detailed performance for ${display}`}
+        aria-label={`View detailed performance for ${display}${rank ? `, rank ${rank} of ${totalRanked}` : ""}`}
       >
+        {rank && (
+          <RankBadge
+            $rank={rank}
+            aria-label={`Rank ${rank} (${ordinal(rank)})`}
+          >
+            <span className="medalEmoji" role="img" aria-hidden>
+              {medal}
+            </span>
+            <span className="rankNum">{ordinal(rank)}</span>
+          </RankBadge>
+        )}
         <TickerBadge aria-label={`ticker symbol ${ticker}`}>
           {ticker}
         </TickerBadge>
@@ -521,7 +592,7 @@ function Ticker({
 
   return (
     <TickerContainer
-      aria-label={`${display} detailed performance`}
+      aria-label={`${display} detailed performance${rank ? `, rank ${rank} of ${totalRanked}` : ""}`}
       data-ticker={ticker}
       style={
         highlight
@@ -533,6 +604,14 @@ function Ticker({
           : undefined
       }
     >
+      {rank && (
+        <RankBadge $rank={rank} aria-label={`Rank ${rank} (${ordinal(rank)})`}>
+          <span className="medalEmoji" role="img" aria-hidden>
+            {medal}
+          </span>
+          <span className="rankNum">{ordinal(rank)}</span>
+        </RankBadge>
+      )}
       <DetailHeader>
         <DetailLogoWrap>
           <TickerImage src={image} style={{ width: "100%", maxWidth: 150 }} />
@@ -564,6 +643,16 @@ function Ticker({
           <StatValue>${current}</StatValue>
         </StatCard>
         <StatCard>
+          <StatLabel>Put In 💵</StatLabel>
+          <StatValue>
+            $
+            {parseFloat(originalValue).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </StatValue>
+        </StatCard>
+        <StatCard>
           <StatLabel>Bought At 🛒</StatLabel>
           <StatValue>${formattedAverageCost}</StatValue>
         </StatCard>
@@ -587,6 +676,22 @@ export default function Tickers({
   onSelectTicker,
   focusTicker,
 }) {
+  // compute ranking map once per data change
+  const rankMap = React.useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) return {};
+    const enriched = data.map((s) => {
+      const avg = parseFloat(s.averageCost);
+      const pct = avg ? ((s.current - avg) / avg) * 100 : 0;
+      return { t: s.ticker, pct };
+    });
+    enriched.sort((a, b) => b.pct - a.pct);
+    const map = {};
+    enriched.forEach((e, i) => {
+      map[e.t] = i + 1;
+    });
+    return map;
+  }, [data]);
+  const totalRanked = Object.keys(rankMap).length;
   React.useEffect(() => {
     if (!condensed && focusTicker) {
       // give layout a tick
@@ -616,6 +721,8 @@ export default function Tickers({
               {...stock}
               condensed
               onSelectTicker={onSelectTicker}
+              rank={rankMap[stock.ticker]}
+              totalRanked={totalRanked}
             />
           ))}
         </CardsGrid>
@@ -631,6 +738,8 @@ export default function Tickers({
             {...stock}
             onSelectTicker={onSelectTicker}
             highlight={focusTicker === stock.ticker}
+            rank={rankMap[stock.ticker]}
+            totalRanked={totalRanked}
           />
         ))}
       </TickerTableContainer>

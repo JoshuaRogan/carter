@@ -77,4 +77,44 @@ describe("getStockData memoization", () => {
     const val = await getStockData("FAIL");
     expect(val).toBe(false);
   });
+
+  it("dedupes concurrent in-flight fetches", async () => {
+    __clearStockCache();
+    let resolveFetch;
+    const fetchPromise = new Promise((res) => (resolveFetch = res));
+    global.fetch.mockReturnValue(fetchPromise);
+    const p1 = getStockData("AMZN");
+    const p2 = getStockData("AMZN");
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    // Now resolve fetch
+    resolveFetch({ ok: true, json: async () => ({ c: 999 }) });
+    const [r1, r2] = await Promise.all([p1, p2]);
+    expect(r1).toBe(999);
+    expect(r2).toBe(999);
+    // Second round within TTL should not refetch
+    const r3 = await getStockData("AMZN");
+    expect(r3).toBe(999);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("negative caches 4xx and avoids refetch within TTL", async () => {
+    __clearStockCache();
+    now = 500000;
+    jest.spyOn(Date, "now").mockImplementation(() => now);
+    global.fetch.mockResolvedValueOnce({ ok: false });
+    const first = await getStockData("BAD", { ttlMs: 60000 });
+    expect(first).toBe(false);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    // Within TTL
+    now += 1000;
+    const second = await getStockData("BAD", { ttlMs: 60000 });
+    expect(second).toBe(false);
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    // After TTL expires, should fetch again
+    now += 60001;
+    global.fetch.mockResolvedValueOnce({ ok: false });
+    const third = await getStockData("BAD", { ttlMs: 60000 });
+    expect(third).toBe(false);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
 });
