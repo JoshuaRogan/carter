@@ -229,11 +229,173 @@ function niceFamilyName(fam) {
   return fam.charAt(0).toUpperCase() + fam.slice(1);
 }
 
+const LeaderboardSection = styled.section`
+  margin-top: 60px;
+`;
+const LeaderboardsRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  margin-top: 60px;
+  @media (min-width: 960px) {
+    flex-direction: row;
+    align-items: flex-start;
+    > section {
+      flex: 1 1 0;
+      margin-top: 0;
+    }
+  }
+`;
+const LeaderboardTitle = styled.h2`
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  margin: 0 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #ffcc33, #ff8a54, #b57bff);
+  -webkit-background-clip: text;
+  color: transparent;
+`;
+const LeaderboardList = styled.ol`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 14px;
+  max-width: 860px;
+`;
+const LeaderboardItem = styled.li`
+  background: linear-gradient(145deg, #ffffff, #f3f9ff 60%, #eefcf3);
+  border: 2px solid #d7e9f5;
+  border-radius: 18px;
+  padding: 14px 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 14px -6px rgba(20, 38, 60, 0.18);
+  &:before {
+    /* subtle sheen */
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.6),
+      transparent 55%
+    );
+    opacity: 0.5;
+  }
+`;
+const LBRank = styled.span`
+  flex: 0 0 44px;
+  height: 44px;
+  border-radius: 14px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #2b3742;
+  background: ${(p) =>
+    p.$rank === 1
+      ? "linear-gradient(145deg,#ffe27a,#ffcc33)"
+      : p.$rank === 2
+        ? "linear-gradient(145deg,#e0e5ec,#c9d0d7)"
+        : p.$rank === 3
+          ? "linear-gradient(145deg,#f6c39b,#e19152)"
+          : "linear-gradient(145deg,#d4e8f5,#b7d2e5)"};
+  box-shadow:
+    0 4px 10px -4px rgba(0, 0, 0, 0.3),
+    0 0 0 2px #ffffffaa;
+`;
+const LBTicker = styled.span`
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #e2f2ff;
+  padding: 4px 10px 5px;
+  border-radius: 14px;
+  color: #18415c;
+`;
+const LBNameWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+`;
+const LBPrimary = styled.div`
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1d3d5c;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+const LBSecondary = styled.div`
+  font-size: 0.6rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  opacity: 0.65;
+  font-weight: 700;
+`;
+const LBGain = styled.div`
+  font-size: 1rem;
+  font-weight: 800;
+  color: ${(p) => (p.$neg ? "#e74c3c" : "#0c8b47")};
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+// Worst stocks styles
+const WorstLeaderboardTitle = styled.h2`
+  font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+  margin: 50px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: linear-gradient(90deg, #ff6b6b, #ff9f7d, #ffc371);
+  -webkit-background-clip: text;
+  color: transparent;
+`;
+const WorstLeaderboardList = LeaderboardList; // reuse styles
+const WorstLeaderboardItem = styled(LeaderboardItem)`
+  background: linear-gradient(145deg, #fff9f9, #ffecec 55%, #fff6f6);
+  border-color: #f9d2d2;
+`;
+const WRank = styled(LBRank)`
+  background: ${(p) =>
+    p.$rank === 1
+      ? "linear-gradient(145deg,#ffb3b3,#ff7e7e)"
+      : p.$rank === 2
+        ? "linear-gradient(145deg,#ffd0b3,#ffa573)"
+        : p.$rank === 3
+          ? "linear-gradient(145deg,#ffe2b3,#ffc173)"
+          : "linear-gradient(145deg,#e9d7d7,#d9c7c7)"};
+`;
+const WGain = styled(LBGain)`
+  color: #e74c3c;
+`;
+
 function Home() {
   const navigate = useNavigate();
   // Memoize portfolios list to provide a stable reference for effect deps
   const visiblePortfolios = useMemo(() => portfolios, []);
   const [summaries, setSummaries] = useState({}); // id -> { total, invested, delta, pct }
+  const [topStocks, setTopStocks] = useState([]); // [{ key, rank, ticker, display, ownerName, pct, delta }]
+  const [worstStocks, setWorstStocks] = useState([]); // bottom performers
 
   useEffect(() => {
     let active = true;
@@ -242,14 +404,37 @@ function Home() {
       const initial = {};
       for (const p of visiblePortfolios) initial[p.id] = { loading: true };
       setSummaries(initial);
+      setTopStocks([]);
+      setWorstStocks([]);
+      const stockPerf = [];
       const results = await Promise.all(
         visiblePortfolios.map(async (p) => {
           try {
             const stocks = await enrichStocks(p.data);
+            // portfolio summary
             const total = sumStocks(stocks);
             const invested = sumInvestmentAmount(stocks);
             const delta = total - invested;
             const pct = invested === 0 ? 0 : (delta / invested) * 100;
+            // accumulate stock performance
+            for (const s of stocks) {
+              const avg = parseFloat(s.averageCost);
+              const cur = parseFloat(s.current);
+              if (!avg || isNaN(avg) || avg === 0 || isNaN(cur)) continue;
+              const diff = cur - avg;
+              const spct = (diff / avg) * 100;
+              stockPerf.push({
+                key: p.id + ":" + s.ticker,
+                ticker: s.ticker,
+                display: s.display,
+                ownerId: p.id,
+                ownerName: p.name,
+                pct: spct,
+                delta: diff,
+                current: cur,
+                avg,
+              });
+            }
             return [p.id, { total, invested, delta, pct, loading: false }];
           } catch (e) {
             return [
@@ -270,6 +455,18 @@ function Home() {
       const next = {};
       results.forEach(([id, val]) => (next[id] = val));
       setSummaries(next);
+      // derive leaderboard
+      stockPerf.sort((a, b) => b.pct - a.pct);
+      const top5 = stockPerf.slice(0, 5).map((s, i) => ({ ...s, rank: i + 1 }));
+      setTopStocks(top5);
+      const totalStocksCount = stockPerf.length;
+      if (totalStocksCount > 5) {
+        const worst5 = stockPerf
+          .slice(-5)
+          .reverse()
+          .map((s, i) => ({ ...s, wRank: i + 1 }));
+        setWorstStocks(worst5);
+      }
     })();
     return () => {
       active = false;
@@ -314,6 +511,7 @@ function Home() {
     <PageWrapper>
       <Heading>Our Family Stocks</Heading>
       <SubHeading>Tap a card to peek at how they are doing!</SubHeading>
+      {/* portfolio sections */}
       {orderedFamilies.map((fam) => (
         <Section key={fam} aria-label={`${niceFamilyName(fam)} family section`}>
           {orderedFamilies.length > 1 && (
@@ -418,6 +616,139 @@ function Home() {
           </CardsGrid>
         </Section>
       ))}
+      {(topStocks.length > 0 || worstStocks.length > 0) &&
+        (topStocks.length > 0 && worstStocks.length > 0 ? (
+          <LeaderboardsRow>
+            <LeaderboardSection aria-label="Top performing stocks overall">
+              <LeaderboardTitle>Top Stocks 🏆</LeaderboardTitle>
+              <LeaderboardList>
+                {topStocks.map((s) => {
+                  const neg = s.pct < 0;
+                  return (
+                    <LeaderboardItem
+                      key={s.key}
+                      aria-label={`Rank ${s.rank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
+                    >
+                      <LBRank $rank={s.rank}>
+                        <span style={{ fontSize: "1.05rem" }}>
+                          {s.rank === 1
+                            ? "🥇"
+                            : s.rank === 2
+                              ? "🥈"
+                              : s.rank === 3
+                                ? "🥉"
+                                : "🏅"}
+                        </span>
+                        <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
+                          {ordinal(s.rank)}
+                        </span>
+                      </LBRank>
+                      <LBTicker>{s.ticker}</LBTicker>
+                      <LBNameWrap>
+                        <LBPrimary>{s.display}</LBPrimary>
+                        <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
+                      </LBNameWrap>
+                      <LBGain $neg={neg}>
+                        {neg ? "-" : "+"}
+                        {Math.abs(s.pct).toFixed(2)}%
+                      </LBGain>
+                    </LeaderboardItem>
+                  );
+                })}
+              </LeaderboardList>
+            </LeaderboardSection>
+            <LeaderboardSection aria-label="Worst performing stocks overall">
+              <WorstLeaderboardTitle style={{ marginTop: 0 }}>
+                Lowest Stocks 🔻
+              </WorstLeaderboardTitle>
+              <WorstLeaderboardList>
+                {worstStocks.map((s) => (
+                  <WorstLeaderboardItem
+                    key={s.key}
+                    aria-label={`Worst rank ${s.wRank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
+                  >
+                    <WRank $rank={s.wRank}>
+                      <span style={{ fontSize: "1.05rem" }}>🔻</span>
+                      <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
+                        {ordinal(s.wRank)}
+                      </span>
+                    </WRank>
+                    <LBTicker>{s.ticker}</LBTicker>
+                    <LBNameWrap>
+                      <LBPrimary>{s.display}</LBPrimary>
+                      <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
+                    </LBNameWrap>
+                    <WGain>-{Math.abs(s.pct).toFixed(2)}%</WGain>
+                  </WorstLeaderboardItem>
+                ))}
+              </WorstLeaderboardList>
+            </LeaderboardSection>
+          </LeaderboardsRow>
+        ) : topStocks.length > 0 ? (
+          <LeaderboardSection aria-label="Top performing stocks overall">
+            <LeaderboardTitle>Top Stocks 🏆</LeaderboardTitle>
+            <LeaderboardList>
+              {topStocks.map((s) => {
+                const neg = s.pct < 0;
+                return (
+                  <LeaderboardItem
+                    key={s.key}
+                    aria-label={`Rank ${s.rank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
+                  >
+                    <LBRank $rank={s.rank}>
+                      <span style={{ fontSize: "1.05rem" }}>
+                        {s.rank === 1
+                          ? "🥇"
+                          : s.rank === 2
+                            ? "🥈"
+                            : s.rank === 3
+                              ? "🥉"
+                              : "🏅"}
+                      </span>
+                      <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
+                        {ordinal(s.rank)}
+                      </span>
+                    </LBRank>
+                    <LBTicker>{s.ticker}</LBTicker>
+                    <LBNameWrap>
+                      <LBPrimary>{s.display}</LBPrimary>
+                      <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
+                    </LBNameWrap>
+                    <LBGain $neg={neg}>
+                      {neg ? "-" : "+"}
+                      {Math.abs(s.pct).toFixed(2)}%
+                    </LBGain>
+                  </LeaderboardItem>
+                );
+              })}
+            </LeaderboardList>
+          </LeaderboardSection>
+        ) : (
+          <LeaderboardSection aria-label="Worst performing stocks overall">
+            <WorstLeaderboardTitle>Lowest Stocks 🔻</WorstLeaderboardTitle>
+            <WorstLeaderboardList>
+              {worstStocks.map((s) => (
+                <WorstLeaderboardItem
+                  key={s.key}
+                  aria-label={`Worst rank ${s.wRank} ${s.display} owned by ${s.ownerName} at ${s.pct.toFixed(2)} percent`}
+                >
+                  <WRank $rank={s.wRank}>
+                    <span style={{ fontSize: "1.05rem" }}>🔻</span>
+                    <span style={{ fontSize: ".55rem", fontWeight: 800 }}>
+                      {ordinal(s.wRank)}
+                    </span>
+                  </WRank>
+                  <LBTicker>{s.ticker}</LBTicker>
+                  <LBNameWrap>
+                    <LBPrimary>{s.display}</LBPrimary>
+                    <LBSecondary>{s.ownerName}'s portfolio</LBSecondary>
+                  </LBNameWrap>
+                  <WGain>-{Math.abs(s.pct).toFixed(2)}%</WGain>
+                </WorstLeaderboardItem>
+              ))}
+            </WorstLeaderboardList>
+          </LeaderboardSection>
+        ))}
       <div style={{ display: "none" }}>learn react</div>
     </PageWrapper>
   );
