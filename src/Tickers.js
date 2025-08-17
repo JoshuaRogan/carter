@@ -91,7 +91,10 @@ const TickerCard = styled.div`
   overflow: hidden;
   min-height: 250px; /* ensure taller cards */
   box-shadow: 0 4px 14px -4px #0009;
-  transition: transform 0.25s, box-shadow 0.25s, background 0.4s;
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s,
+    background 0.4s;
   &:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 34px -12px #000d;

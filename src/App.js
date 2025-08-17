@@ -64,7 +64,10 @@ const Card = styled.button`
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s, background 0.4s;
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s,
+    background 0.4s;
   color: #ecf0f1;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -147,7 +150,7 @@ function Home() {
   const navigate = useNavigate();
   const envSiteName = getSiteFamily();
   const visiblePortfolios = portfolios.filter(
-    (p) => envSiteName === FAMILIES.LOCAL || p.family === envSiteName
+    (p) => envSiteName === FAMILIES.LOCAL || p.family === envSiteName,
   );
   const grouped = visiblePortfolios.reduce((acc, p) => {
     (acc[p.family] ||= []).push(p);

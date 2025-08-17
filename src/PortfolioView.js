@@ -34,7 +34,9 @@ const BackBtn = styled.button`
   border-radius: 12px;
   cursor: pointer;
   color: #fff;
-  transition: background 0.25s, transform 0.25s;
+  transition:
+    background 0.25s,
+    transform 0.25s;
   &:hover {
     background: #ffffff35;
     transform: translateY(-2px);
