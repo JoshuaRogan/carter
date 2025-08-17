@@ -87,7 +87,7 @@
   {
     "display": "Gold",
     "image": "https://i.pinimg.com/736x/05/83/9f/05839f01a44920cb63fb389278a75fac.jpg",
-    "ticker": "GOLD",
+    "ticker": "B",
     "exchange": "NYSE",
     "shares": 3,
     "averageCost": "16.91",
@@ -96,6 +96,11 @@
         "date": "2023-08-12",
         "shares": 3,
         "price": "16.91"
+      },
+      {
+        "date": "2025-08-15",
+        "shares": 1.03,
+        "price": "24"
       }
     ]
   },

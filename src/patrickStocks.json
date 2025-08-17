@@ -39,13 +39,18 @@
     "image": "https://1000logos.net/wp-content/uploads/2020/09/Waste-Management-Logo.png",
     "ticker": "WM",
     "exchange": "NYSE",
-    "shares": 0.308,
-    "averageCost": "16.91",
+    "shares": 0.418,
+    "averageCost": "200",
     "lots": [
       {
         "date": "2023-08-12",
         "shares": 0.308,
         "price": "160"
+      },
+      {
+        "date": "2025-08-15",
+        "shares": 0.11,
+        "price": "227"
       }
     ]
   },

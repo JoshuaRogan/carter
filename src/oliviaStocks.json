@@ -13,5 +13,20 @@
         "price": "10"
       }
     ]
+  },
+  {
+    "display": "Hasbro",
+    "image": "https://i.imgur.com/Za0X7sQ.png",
+    "ticker": "HAS",
+    "exchange": "NYSE",
+    "shares": 0.3,
+    "averageCost": "81",
+    "lots": [
+      {
+        "date": "2025-08-15",
+        "shares": 0.3,
+        "price": "81"
+      }
+    ]
   }
 ]
