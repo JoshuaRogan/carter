@@ -142,6 +142,27 @@ const Loading = styled.div`
   opacity: 0.85;
 `;
 
+const WarningBanner = styled.div`
+  margin: 20px 0 28px; /* keep aligned with App */
+  padding: 16px 20px 18px;
+  border: 3px solid #ff5a5a;
+  background:
+    linear-gradient(180deg, #ff3b3b, #ff8a8a) 0 0/6px 100% no-repeat,
+    linear-gradient(135deg, #fff2f2 0%, #ffe0e0 55%, #ffd6d6 100%);
+  color: #7a0b0b;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  border-radius: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow:
+    0 6px 16px -6px rgba(122, 11, 11, 0.45),
+    0 0 0 3px #ffffffaa;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+`;
+
 const ViewToggleBtn = styled.button`
   margin-left: auto;
   background: linear-gradient(145deg, #fffbe2, #e2f5ff);
@@ -221,6 +242,7 @@ export default function PortfolioView({ id, onBack }) {
   const [loading, setLoading] = useState(true);
   const [condensed, setCondensed] = useState(true); // toggle between compact and detailed
   const [selectedTicker, setSelectedTicker] = useState(undefined); // ticker symbol chosen from condensed view
+  const [priceWarning, setPriceWarning] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -228,7 +250,10 @@ export default function PortfolioView({ id, onBack }) {
       setLoading(true);
       try {
         const enriched = await enrichStocks(portfolio.data);
-        if (active) setStocks(enriched);
+        if (active) {
+          setStocks(enriched);
+          if (enriched.some((s) => s._priceFetchFailed)) setPriceWarning(true);
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -305,6 +330,17 @@ export default function PortfolioView({ id, onBack }) {
           Play Game 🎮
         </GameBtn>
       </HeaderBar>
+      {priceWarning && (
+        <WarningBanner role="alert" aria-live="polite">
+          <span role="img" aria-hidden style={{ fontSize: "1rem" }}>
+            ⚠️
+          </span>
+          <span>
+            Some live prices failed to load for this portfolio. Those tickers
+            show purchase cost as a fallback.
+          </span>
+        </WarningBanner>
+      )}
 
       <MetricsStrip>
         <MetricCard>

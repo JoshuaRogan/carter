@@ -389,6 +389,28 @@ const WGain = styled(LBGain)`
   color: #e74c3c;
 `;
 
+// Warning banner for partial data issues
+const WarningBanner = styled.div`
+  margin: 20px 0 28px;
+  padding: 16px 20px 18px;
+  border: 3px solid #ff5a5a;
+  background:
+    linear-gradient(180deg, #ff3b3b, #ff8a8a) 0 0/6px 100% no-repeat,
+    linear-gradient(135deg, #fff2f2 0%, #ffe0e0 55%, #ffd6d6 100%);
+  color: #7a0b0b;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  border-radius: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow:
+    0 6px 16px -6px rgba(122, 11, 11, 0.45),
+    0 0 0 3px #ffffffaa;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+`;
+
 function Home() {
   const navigate = useNavigate();
   // Memoize portfolios list to provide a stable reference for effect deps
@@ -396,6 +418,7 @@ function Home() {
   const [summaries, setSummaries] = useState({}); // id -> { total, invested, delta, pct }
   const [topStocks, setTopStocks] = useState([]); // [{ key, rank, ticker, display, ownerName, pct, delta }]
   const [worstStocks, setWorstStocks] = useState([]); // bottom performers
+  const [priceWarning, setPriceWarning] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -406,11 +429,18 @@ function Home() {
       setSummaries(initial);
       setTopStocks([]);
       setWorstStocks([]);
+      setPriceWarning(false);
       const stockPerf = [];
       const results = await Promise.all(
         visiblePortfolios.map(async (p) => {
           try {
             const stocks = await enrichStocks(p.data);
+            // detect any failed fetch in this portfolio
+            const anyFail = stocks.some((s) => s._priceFetchFailed);
+            if (anyFail) {
+              // set immediately (avoid waiting all) but keep idempotent
+              setPriceWarning(true);
+            }
             // portfolio summary
             const total = sumStocks(stocks);
             const invested = sumInvestmentAmount(stocks);
@@ -426,7 +456,7 @@ function Home() {
               stockPerf.push({
                 key: p.id + ":" + s.ticker,
                 ticker: s.ticker,
-                display: s.display,
+                display: s.ticker,
                 ownerId: p.id,
                 ownerName: p.name,
                 pct: spct,
@@ -511,6 +541,22 @@ function Home() {
     <PageWrapper>
       <Heading>Our Family Stocks</Heading>
       <SubHeading>Tap a card to peek at how they are doing!</SubHeading>
+      {priceWarning && (
+        <WarningBanner role="alert" aria-live="polite">
+          <span
+            role="img"
+            aria-hidden
+            style={{ fontSize: "1.25rem", lineHeight: 1 }}
+          >
+            ⚠️
+          </span>
+          <span style={{ lineHeight: 1.3 }}>
+            Some live prices failed to load. Displayed values for those tickers
+            use purchase cost as a fallback and may not reflect current market
+            prices.
+          </span>
+        </WarningBanner>
+      )}
       {/* portfolio sections */}
       {orderedFamilies.map((fam) => (
         <Section key={fam} aria-label={`${niceFamilyName(fam)} family section`}>

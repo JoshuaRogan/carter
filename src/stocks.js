@@ -37,10 +37,8 @@ async function addPriceToStocks(stock) {
     const { averageCost, totalShares } = computeLotAverages(stock.lots);
     if (averageCost !== undefined) {
       stock.averageCost = averageCost;
-      // Always override shares with total lot shares to ensure calculations use lots, ignoring any JSON shares field
       stock.shares = totalShares;
     } else {
-      // No valid lots; fall back to parsing existing fields
       stock.averageCost = parseFloat(stock.averageCost);
       stock.shares =
         typeof stock.shares === "number"
@@ -55,8 +53,15 @@ async function addPriceToStocks(stock) {
         : parseFloat(stock.shares);
   }
 
-  stock.current = await getStockData(stock.ticker);
+  const fetched = await getStockData(stock.ticker);
+  if (fetched === false) {
+    stock._priceFetchFailed = true; // mark failure for UI warnings
+    stock.current = stock.averageCost; // graceful fallback to cost
+  } else {
+    stock.current = fetched;
+  }
   if (!stock.current || isNaN(stock.current)) {
+    stock._priceFetchFailed = true;
     stock.current = stock.averageCost;
   }
   return stock;
