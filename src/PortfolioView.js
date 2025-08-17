@@ -159,7 +159,7 @@ export default function PortfolioView({ id, onBack }) {
         {loading ? (
           <Loading>Loading live prices…</Loading>
         ) : (
-          <Tickers data={stocks} name={portfolio.name} condensed />
+          <Tickers data={stocks} name={portfolio.name} condensed={true} />
         )}
       </Content>
     </Wrapper>

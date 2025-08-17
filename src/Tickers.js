@@ -39,16 +39,39 @@ const TickerTableContainer = styled.div`
 `;
 
 const TickerContainer = styled.div`
+  /* Upgraded styling for individual (non-condensed) detail view */
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-top: 15px;
-`;
-
-const TickerImageContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #ffffff12;
+  border: 1px solid #ffffff25;
+  backdrop-filter: blur(6px);
+  padding: 26px 28px 30px;
+  margin: 22px auto 0;
+  border-radius: 26px;
+  color: #fff;
+  max-width: 760px;
+  width: 100%;
+  box-shadow: 0 8px 26px -10px #000c;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background 0.35s,
+    box-shadow 0.3s,
+    transform 0.3s;
+  &:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 18% 12%, #ffffff2a, transparent 65%);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  &:hover {
+    /* subtle lift */
+    background: #ffffff18;
+    box-shadow: 0 14px 40px -12px #000d;
+    transform: translateY(-4px);
+  }
 `;
 
 const TickerImage = styled.img`
@@ -56,14 +79,6 @@ const TickerImage = styled.img`
   @media (max-width: 768px) {
     width: 50vw;
   }
-`;
-
-const CurrentValue = styled.div`
-  font-size: 1.5em;
-`;
-
-const LotsDiv = styled.div`
-  font-size: 0.75em;
 `;
 
 // New styles for condensed card layout
@@ -85,11 +100,11 @@ const TickerCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 1rem; /* increased base font */
-  line-height: 1.25; /* improve readability */
+  font-size: 1rem;
+  line-height: 1.25;
   position: relative;
   overflow: hidden;
-  min-height: 250px; /* ensure taller cards */
+  min-height: 250px;
   box-shadow: 0 4px 14px -4px #0009;
   transition:
     transform 0.25s,
@@ -102,20 +117,74 @@ const TickerCard = styled.div`
   }
 `;
 
+// Restored: badge for ticker symbol label
 const TickerBadge = styled.div`
-  font-size: 0.7rem; /* larger */
-  letter-spacing: 1.4px;
+  font-size: 0.65rem;
   font-weight: 600;
+  letter-spacing: 1.3px;
   text-transform: uppercase;
-  opacity: 0.9;
-  margin-bottom: 8px;
+  background: #ffffff22;
+  padding: 4px 10px 5px;
+  border-radius: 14px;
+  align-self: flex-start;
+  margin-bottom: 6px;
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 1px 2px -1px #0008 inset,
+    0 0 0 1px #ffffff1f;
 `;
 
+// New alignment helpers
+const LogoSlot = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 84px; /* fixed height for logo area */
+  margin-bottom: 4px;
+`;
+
+const NameSlot = styled.div`
+  width: 100%;
+  min-height: 40px; /* reserve space so rows align */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`;
+
+const DisplayName = styled.strong`
+  font-size: 1.05rem;
+  line-height: 1.15;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* allow wrap but cap lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const PriceSlot = styled.div`
+  min-height: 54px; /* value + shares line */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+`;
+
+const ChangeSlot = styled.div`
+  min-height: 28px; /* change line */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+`;
+
+// Restored styled components used by condensed view
 const PriceLine = styled.div`
-  font-size: 1.05rem; /* larger */
+  font-size: 1.05rem;
   font-weight: 500;
   opacity: 0.92;
-  margin-top: 10px;
+  margin-top: 0; /* removed to keep vertical alignment uniform */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -123,12 +192,151 @@ const PriceLine = styled.div`
 `;
 
 const ChangeLine = styled.div`
-  font-size: 0.95rem; /* larger */
+  font-size: 0.95rem;
   margin-top: 14px;
   font-weight: 650;
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+/* New styled components for detailed (non-condensed) view */
+const DetailHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  flex-wrap: wrap;
+`;
+
+const DetailLogoWrap = styled.div`
+  width: 140px;
+  max-width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 14px;
+  background: #ffffff10;
+  border: 1px solid #ffffff22;
+  border-radius: 20px;
+`;
+
+const DetailNameBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+  flex: 1 1 auto;
+`;
+
+const DetailDisplayName = styled.div`
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+`;
+
+const DetailTickerSymbol = styled.span`
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  padding: 4px 10px 5px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f39c12, #e74c3c, #9b59b6);
+  -webkit-background-clip: text;
+  color: transparent;
+  position: relative;
+  &:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #ffffff15;
+    border-radius: 14px;
+  }
+`;
+
+const DetailValueBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: auto;
+  gap: 6px;
+`;
+
+const BigDollar = styled.div`
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffffff, #d5dbe0);
+  -webkit-background-clip: text;
+  color: transparent;
+`;
+
+const SharesLine = styled.div`
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  opacity: 0.75;
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, #ffffff35, transparent);
+  margin: 26px 0 14px;
+`;
+
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px 28px;
+  width: 100%;
+  margin-top: 4px;
+`;
+
+const StatCard = styled.div`
+  background: #ffffff10;
+  border: 1px solid #ffffff18;
+  padding: 14px 16px 16px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  font-size: 0.78rem;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+  &:before {
+    /* subtle glow */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #ffffff18, transparent 75%);
+    border-radius: 18px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+`;
+
+const StatLabel = styled.div`
+  text-transform: uppercase;
+  font-size: 0.55rem;
+  letter-spacing: 1.3px;
+  opacity: 0.65;
+  font-weight: 600;
+`;
+
+const StatValue = styled.div`
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const LotsList = styled.div`
+  margin-top: 20px;
+  font-size: 0.6rem;
+  opacity: 0.55;
+  letter-spacing: 0.4px;
+  line-height: 1.4;
 `;
 
 function Icon({ isNegative }) {
@@ -148,6 +356,8 @@ function Ticker({
   display,
   ticker,
   condensed,
+  expanded,
+  onToggle,
   ...rest
 }) {
   const avgCost = parseFloat(averageCost);
@@ -165,72 +375,96 @@ function Ticker({
       lotsStrings.push(`${lot.shares} @ $${lot.price} on ${lot.date}`);
     }
   }
-  console.log(rest);
 
   if (condensed) {
     return (
       <TickerCard>
-        <TickerBadge>{ticker}</TickerBadge>
-        <TickerImageContainer style={{ marginBottom: 12 }}>
-          <TickerImage src={image} style={{ width: "72%", maxWidth: 130 }} />
-        </TickerImageContainer>
-        <strong
-          style={{ fontSize: "1.05rem", textAlign: "center", lineHeight: 1.2 }}
-        >
-          {display}
-        </strong>
-        <PriceLine>
-          <div style={{ fontWeight: 700, fontSize: "1.15rem" }}>
-            ${currentValue}
-          </div>
-          <div style={{ fontSize: ".78rem", opacity: 0.7 }}>
-            {shares} sh @ ${current}
-          </div>
-        </PriceLine>
-        <ChangeLine
-          style={{ color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71" }}
-        >
-          <Icon isNegative={yourChangeIsNegative} />{" "}
-          {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)}
-        </ChangeLine>
+        <TickerBadge style={{ minHeight: 16 }}>{ticker}</TickerBadge>
+        <LogoSlot>
+          <TickerImage
+            src={image}
+            style={{ width: 110, maxWidth: 130, height: "auto" }}
+          />
+        </LogoSlot>
+        <NameSlot>
+          <DisplayName>{display}</DisplayName>
+        </NameSlot>
+        <PriceSlot>
+          <PriceLine>
+            <div style={{ fontWeight: 700, fontSize: "1.15rem" }}>
+              ${currentValue}
+            </div>
+            <div style={{ fontSize: ".78rem", opacity: 0.7 }}>
+              {shares} sh @ ${current}
+            </div>
+          </PriceLine>
+        </PriceSlot>
+        <ChangeSlot>
+          <ChangeLine
+            style={{ color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71" }}
+          >
+            <Icon isNegative={yourChangeIsNegative} />{" "}
+            {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)}
+          </ChangeLine>
+        </ChangeSlot>
       </TickerCard>
     );
   }
 
+  // Enhanced detailed view
   return (
-    <TickerContainer>
-      <TickerImageContainer>
-        <TickerImage src={image} />
-      </TickerImageContainer>
-      <CurrentValue>
-        <strong>${currentValue}</strong>
-      </CurrentValue>
-      <div>
-        <strong>{shares}</strong> share{shares === 1 ? "" : "s"}
-      </div>
-
-      <div>
-        Your Change:
-        <Icon isNegative={yourChangeIsNegative} />{" "}
-        <strong>${yourChange}</strong>
-      </div>
-
-      <div>
-        Current Price: <strong>${current}</strong>
-      </div>
-      <div>
-        Purchase Price: <strong>${averageCost}</strong>
-      </div>
-
-      <div>
-        Stock Price Change:
-        <Icon isNegative={isNegative} />{" "}
-        <strong>
-          ${difference.toFixed(2)} ({percentChange.toFixed(2)}%)
-        </strong>
-      </div>
-
-      <LotsDiv>Lots: {lotsStrings.join(", ")}</LotsDiv>
+    <TickerContainer aria-label={`${display} detailed performance`}>
+      <DetailHeader>
+        <DetailLogoWrap>
+          <TickerImage src={image} style={{ width: "100%", maxWidth: 150 }} />
+        </DetailLogoWrap>
+        <DetailNameBlock>
+          <DetailDisplayName>{display}</DetailDisplayName>
+          <DetailTickerSymbol>{ticker}</DetailTickerSymbol>
+        </DetailNameBlock>
+        <DetailValueBlock>
+          <BigDollar>${currentValue}</BigDollar>
+          <SharesLine>
+            {shares} share{shares === 1 ? "" : "s"} @ ${current}
+          </SharesLine>
+        </DetailValueBlock>
+      </DetailHeader>
+      <Divider />
+      <StatsGrid>
+        <StatCard>
+          <StatLabel>Your Change</StatLabel>
+          <StatValue
+            style={{
+              color: yourChangeIsNegative ? "#e74c3c" : "#2ecc71",
+            }}
+          >
+            <Icon isNegative={yourChangeIsNegative} />
+            {yourChangeIsNegative ? "-" : ""}${Math.abs(yourChange)}
+          </StatValue>
+        </StatCard>
+        <StatCard>
+          <StatLabel>Current Price</StatLabel>
+          <StatValue>${current}</StatValue>
+        </StatCard>
+        <StatCard>
+          <StatLabel>Purchase Price</StatLabel>
+          <StatValue>${averageCost}</StatValue>
+        </StatCard>
+        <StatCard>
+          <StatLabel>Stock Price Change</StatLabel>
+          <StatValue
+            style={{
+              color: isNegative ? "#e74c3c" : "#2ecc71",
+            }}
+          >
+            <Icon isNegative={isNegative} /> ${difference.toFixed(2)} (
+            {percentChange.toFixed(2)}%)
+          </StatValue>
+        </StatCard>
+      </StatsGrid>
+      {lotsStrings.length > 0 && (
+        <LotsList>Lots: {lotsStrings.join(" • ")}</LotsList>
+      )}
     </TickerContainer>
   );
 }
