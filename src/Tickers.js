@@ -69,56 +69,63 @@ const LotsDiv = styled.div`
 // New styles for condensed card layout
 const CardsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 18px;
-  margin-top: 22px;
+  /* increased min width for bigger cards */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 26px; /* more space between larger cards */
+  margin-top: 28px;
 `;
 
 const TickerCard = styled.div`
-  background: #ffffff12;
-  border: 1px solid #ffffff25;
-  backdrop-filter: blur(4px);
-  padding: 14px 14px 16px;
-  border-radius: 16px;
+  background: #ffffff15;
+  border: 1px solid #ffffff30;
+  backdrop-filter: blur(5px);
+  padding: 22px 22px 24px;
+  border-radius: 22px;
   color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 0.78rem;
+  font-size: 1rem; /* increased base font */
+  line-height: 1.25; /* improve readability */
   position: relative;
   overflow: hidden;
+  min-height: 250px; /* ensure taller cards */
+  box-shadow: 0 4px 14px -4px #0009;
   transition: transform 0.25s, box-shadow 0.25s, background 0.4s;
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 22px -8px #000a;
-    background: #ffffff18;
+    transform: translateY(-6px);
+    box-shadow: 0 16px 34px -12px #000d;
+    background: #ffffff28;
   }
 `;
 
 const TickerBadge = styled.div`
-  font-size: 0.55rem;
-  letter-spacing: 1px;
+  font-size: 0.7rem; /* larger */
+  letter-spacing: 1.4px;
+  font-weight: 600;
   text-transform: uppercase;
-  opacity: 0.8;
-  margin-bottom: 4px;
+  opacity: 0.9;
+  margin-bottom: 8px;
 `;
 
 const PriceLine = styled.div`
-  font-size: 0.8rem;
-  opacity: 0.85;
-  margin-top: 4px;
+  font-size: 1.05rem; /* larger */
+  font-weight: 500;
+  opacity: 0.92;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 4px;
 `;
 
 const ChangeLine = styled.div`
-  font-size: 0.7rem;
-  margin-top: 6px;
-  font-weight: 600;
+  font-size: 0.95rem; /* larger */
+  margin-top: 14px;
+  font-weight: 650;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 `;
 
 function Icon({ isNegative }) {
@@ -151,13 +158,15 @@ function Ticker({ current, shares, averageCost, image, lots, display, ticker, co
     return (
       <TickerCard>
         <TickerBadge>{ticker}</TickerBadge>
-        <TickerImageContainer style={{ marginBottom: 6 }}>
-          <TickerImage src={image} style={{ width: '60%', maxWidth: 90 }} />
+        <TickerImageContainer style={{ marginBottom: 12 }}>
+          <TickerImage src={image} style={{ width: '72%', maxWidth: 130 }} />
         </TickerImageContainer>
-        <strong style={{ fontSize: '.8rem', textAlign: 'center' }}>{display}</strong>
+        <strong style={{ fontSize: '1.05rem', textAlign: 'center', lineHeight: 1.2 }}>
+          {display}
+        </strong>
         <PriceLine>
-          <div>${currentValue}</div>
-          <div style={{ fontSize: '.6rem', opacity: .7 }}>{shares} sh @ ${current}</div>
+          <div style={{ fontWeight: 700, fontSize: '1.15rem' }}>${currentValue}</div>
+          <div style={{ fontSize: '.78rem', opacity: .7 }}>{shares} sh @ ${current}</div>
         </PriceLine>
         <ChangeLine style={{ color: yourChangeIsNegative ? '#e74c3c' : '#2ecc71' }}>
           <Icon isNegative={yourChangeIsNegative} /> {yourChangeIsNegative ? '-' : ''}${Math.abs(yourChange)}
