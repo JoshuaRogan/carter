@@ -154,8 +154,8 @@ function Home() {
     return acc;
   }, {});
   const orderedFamilies = [
-    FAMILIES.NOLE,
     FAMILIES.ROGAN,
+    FAMILIES.NOLE,
     FAMILIES.KERRIGAN,
     FAMILIES.TOKASH,
     FAMILIES.ROGAN_DIR,

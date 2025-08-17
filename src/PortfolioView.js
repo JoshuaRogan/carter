@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { getPortfolioById } from "./portfolios";
 import { enrichStocks, sumStocks, sumInvestmentAmount } from "./stocks";
-import Back from "./Back";
 import Tickers from "./Tickers";
 import { ImArrowLeft } from "react-icons/im";
 
