@@ -11,5 +11,18 @@
         "price": "16.89"
       }
     ]
+  },
+  {
+    "display": "S&P 500",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7q_IaAT4ORZzW2NPruMrxL0dMHSwL-WvaPA&s",
+    "ticker": "VOO",
+    "exchange": "NYSE",
+    "lots": [
+      {
+        "date": "2023-07-23",
+        "shares": 0.12,
+        "price": "419"
+      }
+    ]
   }
 ]
