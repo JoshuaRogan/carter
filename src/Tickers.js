@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { ImArrowUp, ImArrowDown } from "react-icons/im";
 import { fetchYearHistory } from "./historicalApi";
 
@@ -42,6 +42,11 @@ const RankBadge = styled.div`
     line-height: 1;
     margin-top: 1px;
   }
+`;
+
+// Inject spinner keyframes once
+const GlobalSpinnerStyle = createGlobalStyle`
+  @keyframes ticker-spin { to { transform: rotate(360deg); } }
 `;
 
 function ordinal(n) {
@@ -489,29 +494,41 @@ function Ticker({
   rank, // new
   totalRanked, // new
 }) {
-  // Enhanced detailed view state needs to be declared unconditionally
+  // History + loading state (now used for both detailed & condensed views)
   const [history, setHistory] = React.useState(null);
+  const [loadingHistory, setLoadingHistory] = React.useState(false);
+  const [historyError, setHistoryError] = React.useState(null);
   React.useEffect(() => {
-    if (!condensed) {
-      let active = true;
-      // Determine earliest lot date if available (normalize & choose true earliest chronologically)
-      let earliest = undefined;
-      if (lots && Array.isArray(lots) && lots.length) {
-        const normalized = lots
-          .map((l) => normalizeLotDate(l.date))
-          .filter(Boolean);
-        if (normalized.length) {
-          earliest = normalized.reduce((min, cur) => (cur < min ? cur : min));
-        }
+    let active = true;
+    // Determine earliest lot date if available (normalize & choose true earliest chronologically)
+    let earliest = undefined;
+    if (lots && Array.isArray(lots) && lots.length) {
+      const normalized = lots
+        .map((l) => normalizeLotDate(l.date))
+        .filter(Boolean);
+      if (normalized.length) {
+        earliest = normalized.reduce((min, cur) => (cur < min ? cur : min));
       }
-      fetchYearHistory(ticker, { since: earliest }).then((h) => {
-        if (active) setHistory(h);
-      });
-      return () => {
-        active = false;
-      };
     }
-  }, [ticker, condensed, lots]);
+    setLoadingHistory(true);
+    setHistoryError(null);
+    fetchYearHistory(ticker, { since: earliest })
+      .then((h) => {
+        if (!active) return;
+        setHistory(h);
+      })
+      .catch((err) => {
+        if (!active) return;
+        setHistoryError(err);
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoadingHistory(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [ticker, lots]);
 
   const avgCost = parseFloat(averageCost);
   const difference = current - avgCost; // use parsed value
@@ -585,6 +602,14 @@ function Ticker({
           <DisplayName>{display}</DisplayName>
         </NameSlot>
         <PriceSlot>
+          {/* Mini sparkline */}
+          <div style={{ width: "100%", marginBottom: 8 }} aria-hidden>
+            <MiniSparkline
+              prices={history?.prices}
+              loading={loadingHistory}
+              error={historyError}
+            />
+          </div>
           <PriceLine>
             <div
               style={{ fontWeight: 800, fontSize: "1.2rem", color: "#3b2b55" }}
@@ -629,6 +654,7 @@ function Ticker({
           : undefined
       }
     >
+      <GlobalSpinnerStyle />
       {rank && (
         <RankBadge $rank={rank} aria-label={`Rank ${rank} (${ordinal(rank)})`}>
           <span className="medalEmoji" role="img" aria-hidden>
@@ -654,9 +680,13 @@ function Ticker({
       </DetailHeader>
       <Divider />
       {/* inline year trend sparkline */}
-      {!condensed && history && history.prices && history.prices.length > 0 && (
+      {!condensed && (
         <div style={{ margin: "0 0 18px", width: "100%" }}>
-          <YearSparkline prices={history.prices} />
+          <YearSparkline
+            prices={history?.prices}
+            loading={loadingHistory}
+            error={historyError}
+          />
         </div>
       )}
       <StatsGrid>
@@ -702,7 +732,7 @@ function Ticker({
 }
 
 // Simple sparkline component (no external deps) for year history
-function YearSparkline({ prices, height = 120 }) {
+function YearSparkline({ prices, height = 120, loading, error }) {
   const hasData = prices && prices.length > 0;
   const id = React.useId();
   // small internal right gap so stroke/circle never hug edge; container now has equal outer padding
@@ -789,6 +819,51 @@ function YearSparkline({ prices, height = 120 }) {
     const yy = y.slice(-2);
     return `${monthNames[isNaN(mi - 1) ? 0 : mi - 1]} ${yy}`;
   };
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          background: "linear-gradient(145deg,#ffffff,#f6faff)",
+          border: "2px solid #d7e9f5",
+          borderRadius: 18,
+          padding: "30px 20px",
+          fontSize: 12,
+          textAlign: "center",
+          fontWeight: 600,
+          letterSpacing: 0.5,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+        }}
+        aria-label="Loading history data"
+      >
+        <Spinner /> Loading chart…
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          background: "linear-gradient(145deg,#ffffff,#fff4f4)",
+          border: "2px solid #f5d7d7",
+          borderRadius: 18,
+          padding: "24px 20px",
+          fontSize: 12,
+          textAlign: "center",
+          opacity: 0.8,
+          fontWeight: 600,
+          color: "#b64c3c",
+        }}
+        aria-label="Error loading history data"
+      >
+        Chart unavailable
+      </div>
+    );
+  }
   if (!hasData) {
     return (
       <div
@@ -937,6 +1012,118 @@ function YearSparkline({ prices, height = 120 }) {
     </div>
   );
 }
+
+// Very small inline sparkline for condensed cards
+function MiniSparkline({ prices, loading, error, height = 32 }) {
+  const hasData = prices && prices.length > 0;
+  const id = React.useId();
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 10,
+          letterSpacing: 0.5,
+          color: "#6d7d88",
+        }}
+        aria-label="Loading mini chart"
+      >
+        <Spinner small />
+      </div>
+    );
+  }
+  if (error || !hasData) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height,
+          fontSize: 8,
+          letterSpacing: 0.5,
+          color: "#a0b0bb",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 8,
+          background: "#f4f9fc",
+          border: "1px solid #e1edf4",
+        }}
+        aria-label="Mini chart unavailable"
+      >
+        n/a
+      </div>
+    );
+  }
+  const closes = prices.map((p) => p.close);
+  const min = Math.min(...closes);
+  const max = Math.max(...closes);
+  const span = max - min || 1;
+  const denom = closes.length - 1 || 1;
+  const points = closes
+    .map((c, i) => {
+      const x = (i / denom) * 100;
+      const y = 100 - ((c - min) / span) * 100;
+      return `${x},${y}`;
+    })
+    .join(" ");
+  const change = closes[closes.length - 1] - closes[0];
+  const up = change >= 0;
+  const stroke = up ? "#1e9e52" : "#e74c3c";
+  return (
+    <div
+      style={{ width: "100%" }}
+      aria-label={`Mini trend ${up ? "up" : "down"}`}
+    >
+      <svg
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        style={{ width: "100%", height, display: "block" }}
+      >
+        <defs>
+          <linearGradient id={`mini-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={stroke} stopOpacity={0.35} />
+            <stop offset="100%" stopColor={stroke} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <polyline
+          points={points}
+          fill="none"
+          stroke={stroke}
+          strokeWidth={1.2}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+        />
+        <polygon
+          points={`${points} 100,100 0,100`}
+          fill={`url(#mini-${id})`}
+          stroke="none"
+          opacity={0.6}
+        />
+      </svg>
+    </div>
+  );
+}
+
+// Simple spinner (CSS based) to avoid external deps
+const Spinner = ({ small }) => (
+  <span
+    aria-hidden
+    style={{
+      width: small ? 14 : 20,
+      height: small ? 14 : 20,
+      border: "3px solid #d1e5f2",
+      borderTopColor: "#4a90e2",
+      borderRadius: "50%",
+      display: "inline-block",
+      animation: "ticker-spin 0.9s linear infinite",
+    }}
+  />
+);
 
 function normalizeLotDate(raw) {
   if (!raw || typeof raw !== "string") return undefined;
