@@ -7,6 +7,9 @@
 
 const DEFAULT_TTL_MS = 60_000; // 1 minute
 const CACHE = new Map(); // ticker -> { value:number|false, ts:number }
+const SYMBOL_OVERRIDES = {
+  TCEHY: '80700.hk' // Tencent ADR -> primary HK listing for fresher local price
+};
 
 // Replaced Finnhub with Stooq lightweight CSV quote endpoint.
 // Stooq quote format example:
@@ -15,17 +18,20 @@ const CACHE = new Map(); // ticker -> { value:number|false, ts:number }
 // AAPL.US,2025-08-26,22:00:07,219.58,221.49,218.55,220.85,36669361
 async function fetchQuote(ticker) {
   if (!ticker) return false;
-  const symbol = `${ticker.toLowerCase()}.us`;
+  const upper = ticker.toUpperCase();
+  let raw = SYMBOL_OVERRIDES[upper] || upper; // may already include suffix
+  let symbol = raw.toLowerCase();
+  if (!/\.[a-z]{2,4}$/.test(symbol)) {
+    symbol += '.us';
+  }
   const url = `https://stooq.com/q/l/?s=${encodeURIComponent(symbol)}&f=sd2t2ohlcv&h&e=csv`;
   try {
     const res = await fetch(url);
     if (!res.ok) return false;
     const text = await res.text();
-    // Expect two lines (header + data). Guard against N/D or empty.
     const lines = text.trim().split(/\r?\n/);
     if (lines.length < 2) return false;
     const dataLine = lines[1];
-    // If Stooq returns N/D it looks like: AAPL.US,N/D,,,,,,
     if (dataLine.includes(',N/D')) return false;
     const cols = dataLine.split(',');
     if (cols.length < 8) return false;
