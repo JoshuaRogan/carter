@@ -5,6 +5,7 @@
 
 const CACHE = new Map(); // key -> { ts, data }
 const TTL = 60 * 60 * 1000; // 1 hour cache
+const BASE_CACHE_TAG = process.env.CACHE_TAG || "carter-site";
 
 function json(body, init = {}) {
   return new Response(JSON.stringify(body), {
@@ -15,6 +16,16 @@ function json(body, init = {}) {
       "Access-Control-Allow-Methods": "GET,OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
       "Cache-Control": "public, max-age=1800, s-maxage=1800",
+      // Comma separated cache tags for CDN level purging (Netlify cache-tag beta)
+      // Tags: site, function, ticker and optional since filter indicator
+      "Cache-Tag": [
+        BASE_CACHE_TAG,
+        "fn:getHistory",
+        body?.ticker ? `ticker:${body.ticker}` : null,
+        body?.since ? "filtered" : null,
+      ]
+        .filter(Boolean)
+        .join(","),
       ...(init.headers || {}),
     },
   });

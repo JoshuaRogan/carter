@@ -6,6 +6,7 @@
 // Caches results in-memory (per lambda instance) for a short TTL.
 
 const DEFAULT_TTL_MS = 60_000; // 1 minute
+const BASE_CACHE_TAG = process.env.CACHE_TAG || "carter-site";
 const CACHE = new Map(); // ticker -> { value:number|false, ts:number }
 const SYMBOL_OVERRIDES = {
 };
@@ -120,6 +121,11 @@ function json(body, { status = 200, headers = {} } = {}) {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET,OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
+      // Cache tags: site, function, individual tickers (limited to 20 to avoid header bloat)
+      "Cache-Tag": [
+        BASE_CACHE_TAG,
+        "fn:getStocks",
+      ].join(","),
       ...headers,
     },
   });

@@ -45,6 +45,36 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
+## Netlify Cache Tagging
+
+The Netlify functions `getStocks`, `getHistory` now emit a `Cache-Tag` response header so selective purges can be performed.
+
+Tags emitted:
+
+* `carter-site` (base tag; override with env var `CACHE_TAG`)
+* `fn:getStocks` or `fn:getHistory`
+* `ticker:SYMBOL` for each referenced ticker (limited to 20 to keep header small)
+* `filtered` when a `since` filter is applied on history requests
+
+### Purging by Tag
+
+Use the new function:
+
+POST `/.netlify/functions/purgeCacheTag` with JSON body `{ "tag": "carter-site" }`
+
+Environment variables required (`netlify.toml` or site settings):
+
+* `NETLIFY_SITE_ID`
+* `NETLIFY_AUTH_TOKEN` (Personal Access Token with appropriate site scope)
+
+Example (curl):
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"tag":"ticker:AAPL"}' https://<your-domain>/.netlify/functions/purgeCacheTag
+```
+
+If you rotate the base tag (env `CACHE_TAG`), old cached objects become irrelevant and will naturally expire; you can also purge the old tag explicitly.
+
 ### Code Splitting
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
