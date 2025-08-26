@@ -3,6 +3,9 @@ const _stockCache = new Map();
 // Track in-flight fetch promises per ticker to dedupe concurrent requests
 const _inflight = new Map();
 
+// Netlify function is reachable via relative path both locally (netlify dev) and in production.
+// So we intentionally do NOT prefix with any host/origin.
+
 /**
  * Clear the in-memory stock cache (intended for tests)
  */
@@ -19,8 +22,10 @@ export function __clearStockCache() {
  *  - force (default false): bypass cache and refresh
  */
 export async function getStockData(ticker, options = {}) {
+  // NOTE: Removing unconditional cache clear to preserve caching across calls.
+  // __clearStockCache(); // (Was previously clearing every call, defeating cache.)
   const {
-    ttlMs = 60000, // positive cache TTL (reverted to original 60s default)
+    ttlMs = 60000, // positive cache TTL (60s default)
     force = false,
     negativeTtlMs = ttlMs, // TTL for negative (false) cache entries
   } = options || {};
@@ -38,12 +43,18 @@ export async function getStockData(ticker, options = {}) {
     const inFlight = _inflight.get(ticker);
     if (inFlight) return inFlight; // return same promise to callers
   }
-  // const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${API_KEY}`;
-  const url = `https://stocks.joshuarogan.com/.netlify/functions/getStocks?ticker=${ticker}`;
+
+  const url =
+    "/.netlify/functions/getStocks?ticker=" + encodeURIComponent(ticker);
+
   const fetchPromise = (async () => {
     let value = false;
     try {
-      const res = await fetch(url);
+      const controller = new AbortController();
+      const timeoutMs = 4000; // general timeout
+      const to = setTimeout(() => controller.abort(), timeoutMs);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(to);
       if (res.ok) {
         const data = await res.json();
         const current =
@@ -51,16 +62,9 @@ export async function getStockData(ticker, options = {}) {
             ? data.price
             : parseFloat(data?.price);
         value = isNaN(current) ? false : current;
-      } else {
-        // Non-OK (e.g., 4xx) -> negative cache to avoid tight retry loops
-        value = false;
       }
     } catch (e) {
-      // Network/other error: if we had a previous cached non-false value still valid, reuse it without updating timestamp
-      if (cached && cached.value !== false) {
-        return cached.value;
-      }
-      value = false; // negative cache (initial failure)
+      // swallow, value stays false
     }
     _stockCache.set(ticker, { value, ts: Date.now() });
     return value;

@@ -705,6 +705,8 @@ function Ticker({
 function YearSparkline({ prices, height = 120 }) {
   const hasData = prices && prices.length > 0;
   const id = React.useId();
+  // small internal right gap so stroke/circle never hug edge; container now has equal outer padding
+  const RIGHT_GAP = 2; // percent of SVG width
   const closes = React.useMemo(
     () => (hasData ? prices.map((p) => p.close) : []),
     [hasData, prices],
@@ -723,9 +725,9 @@ function YearSparkline({ prices, height = 120 }) {
   // Generate smooth path (quadratic midpoint method)
   const { pathD, areaD } = React.useMemo(() => {
     if (!hasData) return { pathD: "", areaD: "" };
-    // Straight line segments (no curve overshoot) for clarity
+    const denom = closes.length - 1 || 1;
     const pts = closes.map((c, i) => {
-      const x = (i / (closes.length - 1 || 1)) * 100;
+      const x = (i / denom) * (100 - RIGHT_GAP);
       const y = 100 - ((c - min) / span) * 100;
       return [x, y];
     });
@@ -738,8 +740,6 @@ function YearSparkline({ prices, height = 120 }) {
     const area = `${d} L ${lastPt[0]},100 L 0,100 Z`;
     return { pathD: d, areaD: area };
   }, [hasData, closes, min, span]);
-  const latestY = hasData ? 100 - ((last.close - min) / span) * 100 : 100;
-  // Build y-axis ticks (5 levels: min -> max)
   const yTicks = React.useMemo(() => {
     if (!hasData) return [];
     const levels = 5;
@@ -817,11 +817,12 @@ function YearSparkline({ prices, height = 120 }) {
         background: "linear-gradient(145deg,#ffffff,#f0f8ff)",
         border: "2px solid #cfe4ef",
         borderRadius: 24,
-        padding: "18px 18px 22px 60px", // leave space for y-axis labels
+        padding: "18px 60px 22px 60px", // equal horizontal padding so chart doesn't appear to overflow right
         boxShadow: "0 6px 18px -8px rgba(0,0,0,0.12)",
         position: "relative",
         overflow: "hidden",
         fontFamily: "Baloo 2",
+        boxSizing: "border-box",
       }}
     >
       {/* Y-axis labels */}
@@ -909,25 +910,14 @@ function YearSparkline({ prices, height = 120 }) {
           shapeRendering="geometricPrecision"
           vectorEffect="non-scaling-stroke"
         />
-        {/* Latest point */}
-        <circle
-          cx={100}
-          cy={latestY}
-          r={2.2}
-          fill="#fff"
-          stroke={strokeColor}
-          strokeWidth={1}
-          vectorEffect="non-scaling-stroke"
-        />
       </svg>
       {dateTicks.length > 1 && (
         <div
           aria-hidden
           style={{
             marginTop: 6,
-            marginLeft: -48, // align under chart area excluding y labels space
-            width: "calc(100% + 48px)",
-            paddingLeft: 48,
+            width: "100%",
+            paddingLeft: 0, // rely on parent left padding so ticks sit under chart start
             display: "flex",
             justifyContent: "space-between",
             fontSize: 10,
@@ -935,6 +925,8 @@ function YearSparkline({ prices, height = 120 }) {
             letterSpacing: 0.5,
             color: "#496273",
             userSelect: "none",
+            boxSizing: "border-box",
+            overflow: "hidden",
           }}
         >
           {dateTicks.map((d) => (
