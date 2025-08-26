@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { ImArrowUp, ImArrowDown } from "react-icons/im";
+import { fetchYearHistory } from "./historicalApi";
 
 // Rank badge (reuse style concept from App.js)
 const RankBadge = styled.div`
@@ -488,6 +489,30 @@ function Ticker({
   rank, // new
   totalRanked, // new
 }) {
+  // Enhanced detailed view state needs to be declared unconditionally
+  const [history, setHistory] = React.useState(null);
+  React.useEffect(() => {
+    if (!condensed) {
+      let active = true;
+      // Determine earliest lot date if available (normalize & choose true earliest chronologically)
+      let earliest = undefined;
+      if (lots && Array.isArray(lots) && lots.length) {
+        const normalized = lots
+          .map((l) => normalizeLotDate(l.date))
+          .filter(Boolean);
+        if (normalized.length) {
+          earliest = normalized.reduce((min, cur) => (cur < min ? cur : min));
+        }
+      }
+      fetchYearHistory(ticker, { since: earliest }).then((h) => {
+        if (active) setHistory(h);
+      });
+      return () => {
+        active = false;
+      };
+    }
+  }, [ticker, condensed, lots]);
+
   const avgCost = parseFloat(averageCost);
   const difference = current - avgCost; // use parsed value
   const percentChange = avgCost ? (difference / avgCost) * 100 : 0;
@@ -628,6 +653,12 @@ function Ticker({
         </DetailValueBlock>
       </DetailHeader>
       <Divider />
+      {/* inline year trend sparkline */}
+      {!condensed && history && history.prices && history.prices.length > 0 && (
+        <div style={{ margin: "0 0 18px", width: "100%" }}>
+          <YearSparkline prices={history.prices} />
+        </div>
+      )}
       <StatsGrid>
         <StatCard>
           <StatLabel>Change 💥</StatLabel>
@@ -668,6 +699,286 @@ function Ticker({
       )}
     </TickerContainer>
   );
+}
+
+// Simple sparkline component (no external deps) for year history
+function YearSparkline({ prices, height = 120 }) {
+  const hasData = prices && prices.length > 0;
+  const id = React.useId();
+  const closes = React.useMemo(
+    () => (hasData ? prices.map((p) => p.close) : []),
+    [hasData, prices],
+  );
+  const min = hasData ? Math.min(...closes) : 0;
+  const max = hasData ? Math.max(...closes) : 0;
+  const span = hasData ? max - min || 1 : 1;
+  const first = hasData ? prices[0] : null;
+  const last = hasData ? prices[prices.length - 1] : null;
+  const change = hasData ? last.close - first.close : 0;
+  const pct =
+    hasData && first.close ? ((change / first.close) * 100).toFixed(2) : "0.00";
+  const up = change >= 0;
+  const strokeColor = up ? "#1e9e52" : "#e74c3c";
+  const fillTo = up ? "#1e9e52" : "#e74c3c";
+  // Generate smooth path (quadratic midpoint method)
+  const { pathD, areaD } = React.useMemo(() => {
+    if (!hasData) return { pathD: "", areaD: "" };
+    // Straight line segments (no curve overshoot) for clarity
+    const pts = closes.map((c, i) => {
+      const x = (i / (closes.length - 1 || 1)) * 100;
+      const y = 100 - ((c - min) / span) * 100;
+      return [x, y];
+    });
+    if (!pts.length) return { pathD: "", areaD: "" };
+    let d = `M ${pts[0][0]},${pts[0][1]}`;
+    for (let i = 1; i < pts.length; i++) {
+      d += ` L ${pts[i][0]},${pts[i][1]}`;
+    }
+    const lastPt = pts[pts.length - 1];
+    const area = `${d} L ${lastPt[0]},100 L 0,100 Z`;
+    return { pathD: d, areaD: area };
+  }, [hasData, closes, min, span]);
+  const latestY = hasData ? 100 - ((last.close - min) / span) * 100 : 100;
+  // Build y-axis ticks (5 levels: min -> max)
+  const yTicks = React.useMemo(() => {
+    if (!hasData) return [];
+    const levels = 5;
+    const out = [];
+    for (let i = 0; i < levels; i++) {
+      const value = min + (span * i) / (levels - 1);
+      const y = 100 - ((value - min) / span) * 100;
+      out.push({ value, y });
+    }
+    return out.reverse(); // highest first (top)
+  }, [hasData, min, span]);
+  const dateTicks = React.useMemo(() => {
+    if (!hasData) return [];
+    const len = prices.length;
+    if (len === 1) return [prices[0].date];
+    const idxs = [
+      0,
+      Math.floor(len * 0.25),
+      Math.floor(len * 0.5),
+      Math.floor(len * 0.75),
+      len - 1,
+    ];
+    const unique = Array.from(
+      new Set(idxs.filter((i) => i >= 0 && i < len)),
+    ).sort((a, b) => a - b);
+    return unique.map((i) => prices[i].date);
+  }, [hasData, prices]);
+  const formatTickDate = (iso) => {
+    if (!iso) return "";
+    const [y, m, d] = iso.split("-");
+    if (!y || !m || !d) return iso;
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const mi = parseInt(m, 10);
+    const yy = y.slice(-2);
+    return `${monthNames[isNaN(mi - 1) ? 0 : mi - 1]} ${yy}`;
+  };
+  if (!hasData) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          background: "linear-gradient(145deg,#ffffff,#f6faff)",
+          border: "2px dashed #d7e9f5",
+          borderRadius: 18,
+          padding: "24px 20px",
+          fontSize: 12,
+          textAlign: "center",
+          opacity: 0.6,
+          fontWeight: 600,
+        }}
+        aria-label="No history data available"
+      >
+        No history data
+      </div>
+    );
+  }
+  return (
+    <div
+      aria-label={`One year price trend ${up ? "up" : "down"} ${change.toFixed(2)} (${up ? "+" : "-"}${Math.abs(pct)}%)`}
+      style={{
+        width: "100%",
+        background: "linear-gradient(145deg,#ffffff,#f0f8ff)",
+        border: "2px solid #cfe4ef",
+        borderRadius: 24,
+        padding: "18px 18px 22px 60px", // leave space for y-axis labels
+        boxShadow: "0 6px 18px -8px rgba(0,0,0,0.12)",
+        position: "relative",
+        overflow: "hidden",
+        fontFamily: "Baloo 2",
+      }}
+    >
+      {/* Y-axis labels */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: 12,
+          top: 18,
+          bottom: 22,
+          width: 42,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          fontSize: 10,
+          fontWeight: 600,
+          letterSpacing: 0.5,
+          color: "#496273",
+        }}
+      >
+        {yTicks.map((t) => (
+          <div
+            key={t.y}
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              transform: "translateY(2px)",
+            }}
+          >
+            ${t.value.toFixed(2)}
+          </div>
+        ))}
+      </div>
+      <svg
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        style={{
+          width: "100%",
+          height,
+          display: "block",
+          boxSizing: "border-box",
+        }}
+      >
+        <defs>
+          <linearGradient id={`grad-${id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={fillTo} stopOpacity={0.25} />
+            <stop offset="65%" stopColor={fillTo} stopOpacity={0.05} />
+            <stop offset="100%" stopColor={fillTo} stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id={`stroke-${id}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={strokeColor} stopOpacity={0.7} />
+            <stop offset="50%" stopColor={strokeColor} stopOpacity={1} />
+            <stop offset="100%" stopColor={strokeColor} stopOpacity={0.7} />
+          </linearGradient>
+        </defs>
+        {/* Area fill */}
+        <path
+          d={areaD}
+          fill={`url(#grad-${id})`}
+          stroke="none"
+          shapeRendering="geometricPrecision"
+        />
+        {/* Dynamic horizontal grid from ticks */}
+        {yTicks.map((t) => (
+          <line
+            key={t.y}
+            x1={0}
+            x2={100}
+            y1={t.y}
+            y2={t.y}
+            stroke="#d9e9f1"
+            strokeWidth={0.3}
+            strokeDasharray="3 4"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+        {/* Main crisp line (thin, non-scaling) */}
+        <path
+          d={pathD}
+          fill="none"
+          stroke={`url(#stroke-${id})`}
+          strokeWidth={1.2}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          shapeRendering="geometricPrecision"
+          vectorEffect="non-scaling-stroke"
+        />
+        {/* Latest point */}
+        <circle
+          cx={100}
+          cy={latestY}
+          r={2.2}
+          fill="#fff"
+          stroke={strokeColor}
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+      {dateTicks.length > 1 && (
+        <div
+          aria-hidden
+          style={{
+            marginTop: 6,
+            marginLeft: -48, // align under chart area excluding y labels space
+            width: "calc(100% + 48px)",
+            paddingLeft: 48,
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: 0.5,
+            color: "#496273",
+            userSelect: "none",
+          }}
+        >
+          {dateTicks.map((d) => (
+            <span key={d}>{formatTickDate(d)}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function normalizeLotDate(raw) {
+  if (!raw || typeof raw !== "string") return undefined;
+  const parts = raw.split(/[-/]/).map((p) => p.trim());
+  if (parts.length !== 3) return undefined;
+  let [y, m, d] = parts;
+  if (!/^[0-9]{4}$/.test(y)) return undefined;
+  // If month > 12 and day <= 12 assume swapped (YYYY-DD-MM)
+  const mi = parseInt(m, 10);
+  const di = parseInt(d, 10);
+  if (mi > 12 && di <= 12) {
+    // swap
+    const tmp = m;
+    m = d;
+    d = tmp;
+  }
+  const monthNum = parseInt(m, 10);
+  const dayNum = parseInt(d, 10);
+  if (
+    isNaN(monthNum) ||
+    isNaN(dayNum) ||
+    monthNum < 1 ||
+    monthNum > 12 ||
+    dayNum < 1 ||
+    dayNum > 31
+  ) {
+    return undefined;
+  }
+  const mm = String(monthNum).padStart(2, "0");
+  const dd = String(dayNum).padStart(2, "0");
+  // Validate by constructing date
+  const dt = new Date(`${y}-${mm}-${dd}T00:00:00Z`);
+  if (isNaN(dt.getTime())) return undefined;
+  return `${y}-${mm}-${dd}`;
 }
 
 export default function Tickers({
