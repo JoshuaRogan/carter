@@ -22,11 +22,11 @@ function json(body, { status = 200, headers = {} } = {}) {
 export default async function handler(req) {
   if (req.method === 'OPTIONS') return json({ ok: true });
   if (req.method !== 'POST') return json({ error: 'POST required' }, { status: 405 });
-  const siteId = process.env.NETLIFY_SITE_ID;
+  const siteId = process.env.SITE_NAME;
   const token = process.env.NETLIFY_AUTH_TOKEN;
   if (!siteId || !token) {
     return json(
-      { error: 'Missing NETLIFY_SITE_ID or NETLIFY_AUTH_TOKEN env vars' },
+      { error: 'Missing SITE_NAME or NETLIFY_AUTH_TOKEN env vars' },
       { status: 500 }
     );
   }
