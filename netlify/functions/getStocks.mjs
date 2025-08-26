@@ -3,22 +3,34 @@
 //  Single: /.netlify/functions/getStocks?ticker=AAPL
 //  Multiple: /.netlify/functions/getStocks?tickers=AAPL,MSFT,GOOG
 // Returns JSON with prices (number) or false when unavailable.
-// Caches results in-memory (per lambda instance) for a short TTL to reduce Finnhub calls.
+// Caches results in-memory (per lambda instance) for a short TTL.
 
 const DEFAULT_TTL_MS = 60_000; // 1 minute
 const CACHE = new Map(); // ticker -> { value:number|false, ts:number }
 
-const API_KEY = process.env.FINNHUB_API_KEY || "buc51vv48v6oa2u4gkpg"; // fallback to hardcoded if env not set
-
+// Replaced Finnhub with Stooq lightweight CSV quote endpoint.
+// Stooq quote format example:
+// https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcv&h&e=csv ->
+// Symbol,Date,Time,Open,High,Low,Close,Volume
+// AAPL.US,2025-08-26,22:00:07,219.58,221.49,218.55,220.85,36669361
 async function fetchQuote(ticker) {
   if (!ticker) return false;
-  const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${API_KEY}`;
+  const symbol = `${ticker.toLowerCase()}.us`;
+  const url = `https://stooq.com/q/l/?s=${encodeURIComponent(symbol)}&f=sd2t2ohlcv&h&e=csv`;
   try {
     const res = await fetch(url);
     if (!res.ok) return false;
-    const data = await res.json();
-    const current = typeof data?.c === 'number' ? data.c : parseFloat(data?.c);
-    return isNaN(current) ? false : current;
+    const text = await res.text();
+    // Expect two lines (header + data). Guard against N/D or empty.
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return false;
+    const dataLine = lines[1];
+    // If Stooq returns N/D it looks like: AAPL.US,N/D,,,,,,
+    if (dataLine.includes(',N/D')) return false;
+    const cols = dataLine.split(',');
+    if (cols.length < 8) return false;
+    const close = parseFloat(cols[6]);
+    return isNaN(close) ? false : close;
   } catch (e) {
     return false;
   }
