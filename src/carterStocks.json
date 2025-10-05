@@ -107,5 +107,18 @@
         "price": "21.14"
       }
     ]
+  },
+    {
+    "display": "Lockheed Martin",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT84NEfNHIhfCkBYzohOhzlZ7PsP-gVbew9vA&s",
+    "ticker": "LMT",
+    "exchange": "NYSE",
+    "lots": [
+      {
+        "date": "2025-10-06",
+        "shares": 0.05,
+        "price": "488"
+      }
+    ]
   }
 ]
