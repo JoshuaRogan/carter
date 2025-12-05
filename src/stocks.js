@@ -28,7 +28,7 @@ export function computeLotAverages(lots) {
   }
   return {
     averageCost: parseFloat((totalCost / totalShares).toFixed(4)),
-    totalShares,
+    totalShares: totalShares.toFixed(3),
   };
 }
 

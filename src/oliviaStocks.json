@@ -24,5 +24,18 @@
         "price": "81"
       }
     ]
+  },
+    {
+    "display": "WWE",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_FjKcBb5VLmEZ5cdOX7DrQO0hNPorw4wFUQ&s",
+    "ticker": "TKO",
+    "exchange": "NYSE",
+    "lots": [
+      {
+        "date": "2025-12-05",
+        "shares": 0.12,
+        "price": "202.46"
+      }
+    ]
   }
 ]

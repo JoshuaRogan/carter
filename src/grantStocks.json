@@ -11,5 +11,18 @@
         "price": "10.10"
       }
     ]
+  },
+  {
+    "display": "John Deere",
+    "image": "https://www.pngmart.com/files/23/John-Deere-Logo-PNG-Photos.png",
+    "ticker": "DE",
+    "exchange": "NYSE",
+    "lots": [
+      {
+        "date": "2025-12-05",
+        "shares": 0.052,
+        "price": "479.45"
+      }
+    ]
   }
 ]
