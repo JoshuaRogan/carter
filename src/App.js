@@ -449,6 +449,17 @@ const KidsGameButton = styled.button`
   }
 `;
 
+const MegaSummary = styled.div`
+  margin-top: 32px;
+  padding-top: 14px;
+  border-top: 1px dashed #c7d8e5;
+  font-size: 0.8rem;
+  color: #274053;
+  text-align: center;
+  opacity: 0.9;
+  font-family: "Baloo 2", "Fredoka", "Comic Sans MS", sans-serif;
+`;
+
 function Home() {
   const navigate = useNavigate();
   // Memoize portfolios list to provide a stable reference for effect deps
@@ -457,6 +468,12 @@ function Home() {
   const [topStocks, setTopStocks] = useState([]); // [{ key, rank, ticker, display, ownerName, pct, delta }]
   const [worstStocks, setWorstStocks] = useState([]); // bottom performers
   const [priceWarning, setPriceWarning] = useState(false);
+  const [megaTotals, setMegaTotals] = useState({
+    total: 0,
+    invested: 0,
+    delta: 0,
+    pct: 0,
+  });
 
   useEffect(() => {
     let active = true;
@@ -469,6 +486,8 @@ function Home() {
       setWorstStocks([]);
       setPriceWarning(false);
       const stockPerf = [];
+      let grandTotal = 0;
+      let grandInvested = 0;
       const results = await Promise.all(
         visiblePortfolios.map(async (p) => {
           try {
@@ -484,6 +503,8 @@ function Home() {
             const invested = sumInvestmentAmount(stocks);
             const delta = total - invested;
             const pct = invested === 0 ? 0 : (delta / invested) * 100;
+            grandTotal += total;
+            grandInvested += invested;
             // accumulate stock performance
             for (const s of stocks) {
               const avg = parseFloat(s.averageCost);
@@ -523,6 +544,14 @@ function Home() {
       const next = {};
       results.forEach(([id, val]) => (next[id] = val));
       setSummaries(next);
+      const megaDelta = grandTotal - grandInvested;
+      const megaPct = grandInvested === 0 ? 0 : (megaDelta / grandInvested) * 100;
+      setMegaTotals({
+        total: grandTotal,
+        invested: grandInvested,
+        delta: megaDelta,
+        pct: megaPct,
+      });
       // derive leaderboard
       stockPerf.sort((a, b) => b.pct - a.pct);
       const top5 = stockPerf.slice(0, 5).map((s, i) => ({ ...s, rank: i + 1 }));
@@ -847,6 +876,13 @@ function Home() {
           </WorstLeaderboardList>
         </LeaderboardSection>
       )}
+      <MegaSummary>
+        Mega portfolio value ${megaTotals.total.toFixed(2)} — total growth{" "}
+        {megaTotals.delta >= 0 ? "+" : "-"}
+        {Math.abs(megaTotals.delta).toFixed(2)} (
+        {megaTotals.delta >= 0 ? "+" : "-"}
+        {Math.abs(megaTotals.pct).toFixed(2)}%)
+      </MegaSummary>
       <div style={{ display: "none" }}>learn react</div>
     </PageWrapper>
   );
