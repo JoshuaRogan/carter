@@ -121,3 +121,16 @@ export function sumInvestmentAmount(stocks) {
     return accum + stock.averageCost * stock.shares;
   }, 0);
 }
+
+// Top-bracket capital gains estimate helper
+// Assumes a blended ~30% rate (federal + surtaxes/state) for teaching only.
+const TOP_CAPITAL_GAINS_RATE = 0.3;
+
+export function estimateCapitalGainsTax({ totalValue, investedAmount }) {
+  if (typeof totalValue !== "number" || typeof investedAmount !== "number") {
+    return 0;
+  }
+  const gains = totalValue - investedAmount;
+  if (gains <= 0) return 0;
+  return gains * TOP_CAPITAL_GAINS_RATE;
+}

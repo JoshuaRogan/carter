@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { getPortfolioById } from "./portfolios";
-import { enrichStocks, sumStocks, sumInvestmentAmount } from "./stocks";
+import {
+  enrichStocks,
+  sumStocks,
+  sumInvestmentAmount,
+  estimateCapitalGainsTax,
+} from "./stocks";
 import Tickers from "./Tickers";
 import { ImArrowLeft } from "react-icons/im";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -269,6 +274,10 @@ export default function PortfolioView({ id, onBack }) {
   const pct = invested === 0 ? 0 : (delta / invested) * 100;
   const negative = delta < 0;
   const friendlyDeltaLabel = negative ? "Down" : "Up";
+  const estTax = estimateCapitalGainsTax({
+    totalValue: total,
+    investedAmount: invested,
+  });
 
   const handleSelectTicker = (ticker) => {
     // User clicked a condensed card: expand to detailed view and focus that ticker
@@ -371,6 +380,12 @@ export default function PortfolioView({ id, onBack }) {
           <MetricValue style={{ color: negative ? "#e74c3c" : "#1e9e52" }}>
             {negative ? "-" : "+"}
             {Math.abs(pct).toFixed(2)}%
+          </MetricValue>
+        </MetricCard>
+        <MetricCard>
+          <MetricLabel>Est. Taxes </MetricLabel>
+          <MetricValue style={{ color: "#e74c3c" }}>
+            ${estTax.toFixed(2)}
           </MetricValue>
         </MetricCard>
       </MetricsStrip>
