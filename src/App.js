@@ -545,7 +545,8 @@ function Home() {
       results.forEach(([id, val]) => (next[id] = val));
       setSummaries(next);
       const megaDelta = grandTotal - grandInvested;
-      const megaPct = grandInvested === 0 ? 0 : (megaDelta / grandInvested) * 100;
+      const megaPct =
+        grandInvested === 0 ? 0 : (megaDelta / grandInvested) * 100;
       setMegaTotals({
         total: grandTotal,
         invested: grandInvested,
