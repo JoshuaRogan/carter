@@ -18,8 +18,7 @@ const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || process.env.API_KEY || "b
 
 // Fetch FX rate (pair like 'usdhkd') via stooq
 async function fetchFxRate(pair) {
-  let cached = FX_CACHE.get(pair);
-  cached = false;
+  const cached = FX_CACHE.get(pair);
   if (cached && Date.now() - cached.ts < FX_TTL_MS) return cached.rate;
   const url = `https://stooq.com/q/l/?s=${pair}&f=sd2t2ohlcv&h&e=csv`;
   try {
@@ -39,9 +38,8 @@ async function fetchFxRate(pair) {
   }
 }
 
-// Dedicated Finnhub fetch (used for specific ADRs like TCEHY)
+// Finnhub quote fetch (primary source: direct USD quotes, reliable from server IPs)
 async function fetchFinnhubQuote(ticker) {
-  console.log(FINNHUB_API_KEY);
   if (!FINNHUB_API_KEY) return false; // cannot fetch without key
   const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${FINNHUB_API_KEY}`;
   try {
@@ -56,17 +54,19 @@ async function fetchFinnhubQuote(ticker) {
   }
 }
 
-// Stooq lightweight CSV quote endpoint
+// Resolve a quote for a ticker.
+// Primary source is Finnhub (direct USD quotes that work from datacenter IPs and
+// track recent ticker renames). Stooq is a best-effort fallback only — note that
+// stooq blocks many server/datacenter IPs (e.g. Netlify Functions), so relying on
+// it as the primary source caused tickers to silently fall back to cost.
 async function fetchQuote(ticker, outCurrency = "USD") {
   if (!ticker) return false;
   const upper = ticker.toUpperCase();
-  // For TCEHY prefer Finnhub (ADR direct USD pricing); fallback to HK listing
-  if (upper === "TCEHY") {
-    const finnhubVal = await fetchFinnhubQuote(upper);
-    console.log("finnhub TCEHY", finnhubVal);
-    if (finnhubVal !== false) return finnhubVal;
-    // fall through to override if Finnhub failed
-  }
+
+  const finnhubVal = await fetchFinnhubQuote(upper);
+  if (finnhubVal !== false) return finnhubVal;
+
+  // --- Fallback: stooq lightweight CSV quote endpoint ---
   let raw = SYMBOL_OVERRIDES[upper] || upper; // may already include suffix
   let symbol = raw.toLowerCase();
   if (!/\.[a-z]{2,4}$/.test(symbol)) {
